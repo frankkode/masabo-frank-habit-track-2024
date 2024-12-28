@@ -1,0 +1,76 @@
+
+.progress-shell {
+     height: 8px;
+     width: 100%;
+     border-radius: 20px;
+     background: linear-gradient(135deg, #6366f1, #0ea5e9);
+     overflow: hidden;
+     margin: 12px 0;
+     box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+  }
+  
+  .progress-bar {
+     background: #01070c;
+     height: 100%;
+     float: right;
+     transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  }
+  
+  .habit-card {
+     border-radius: 16px;
+     padding: 1.75rem;
+     background: white;
+     box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -2px rgba(0,0,0,0.1);
+     border: 1px solid #e5e7eb;
+     transition: all 0.3s ease;
+  }
+  
+  .habit-card:hover {
+     transform: translateY(-4px);
+     box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -4px rgba(0,0,0,0.1);
+  }
+  
+  /* Dark Mode Enhancements */
+  .dark .progress-shell {
+     background: linear-gradient(135deg, #c9d919, #0891b2);
+     box-shadow: inset 0 2px 4px rgba(237, 236, 236, 0.936);
+  }
+  
+  .dark .progress-bar {
+     background: #f7f7f8;
+     box-shadow: 0 2px 4px rgba(179, 176, 20, 0.2);
+  }
+  
+  .dark .habit-card {
+     background-color: #1e293b;
+     border-color: #334155;
+     box-shadow: 0 4px 6px -1px rgba(0,0,0,0.2), 0 2px 4px -2px rgba(0,0,0,0.2);
+  }
+  
+  .dark .habit-card:hover {
+     box-shadow: 0 10px 15px -3px rgba(0,0,0,0.2), 0 4px 6px -4px rgba(0,0,0,0.2);
+  }
+  
+  /* UI Elements */
+  .dark button, 
+  .dark select,
+  .dark input {
+     background-color: #1e293b;
+     border-color: #334155;
+     color: #f1f5f9;
+  }
+  
+  .dark button:hover {
+     background-color: #334155;
+  }
+  
+  /* Success States */
+  .dark .bg-green-50 {
+     background-color: rgba(16, 185, 129, 0.05);
+  }
+  
+  .dark .text-green-600 {
+     color: #10b981;
+  }
+  

@@ -1,0 +1,62 @@
+<!-- templates/habits/habit_tracker.html -->
+{% extends 'base.html' %}
+{% load static %}
+
+{% block extra_head %}
+<link href="https://fonts.googleapis.com/css?family=Lato:300,100" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/vue@2.6.14"></script>
+<link href="{% static 'habit_tracker.css' %}" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+<div class="bg-white dark:bg-gray-800 dark:text-white container">
+  <div id="app">
+    <h1>Habit Tracker</h1>
+    <div>
+      <input type="text" placeholder="Habit Title" v-model="newHabit.name" /><br />
+      <select v-model="newHabit.periodicity" class="bg-white dark:bg-gray-800 dark:text-white habit-select">
+        <option value="daily">Daily</option>
+        <option value="weekly">Weekly</option>
+      </select><br />
+      <textarea v-model="newHabit.description" placeholder="Description" class="bg-white dark:bg-gray-800 dark:text-white habit-description"></textarea><br />
+      <button id="creator" @click="addHabit">Add Habit</button>
+    </div>
+    <div class="bg-white dark:bg-gray-800 dark:text-white row habit">
+      <div v-for="habit in habits" class="bg-white dark:bg-gray-800 dark:text-white four columns" 
+           :key="habit.id"
+           :style="{ borderBottom: '5px solid ' + habit.color }">
+        <h4>{% verbatim %}{{ habit.name }}{% endverbatim %}</h4>
+        <p class="bg-white dark:bg-gray-800 dark:text-white habit-description">{% verbatim %}{{ habit.description }}{% endverbatim %}</p>
+        <div class="bg-white dark:bg-gray-800 dark:text-white shell">
+          <div class="bg-white dark:bg-gray-800 dark:text-white bar" :style="{ width: getCompletionWidth(habit) + '%' }"></div>
+        </div>
+        <div class="bg-white dark:bg-gray-800 dark:text-white lower">
+          <span @click="removeHabit(habit)">
+            <i class="bg-white dark:bg-gray-800 dark:text-white fa fa-times"></i>
+          </span>
+          <button id="progress" 
+                  @click="completeHabit(habit)" 
+                  v-show="!isCompleted(habit)"
+                  :style="{ background: habit.color }"
+           >
+            <i class="bg-white dark:bg-gray-800 dark:text-white fa fa-plus"></i>
+          </button>
+          <div>
+            <span class="bg-white dark:bg-gray-800 dark:text-white streak">Streak: {% verbatim %}{{ habit.streak }}{% endverbatim %}</span>
+            <span class="bg-white dark:bg-gray-800 dark:text-white completion-status" v-if="isCompleted(habit)">Completed today!</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  const CSRF_TOKEN = '{{ csrf_token }}';
+  
+</script>
+<script src="{% static 'habit_tracker.js' %}"></script>
+{% endblock %}

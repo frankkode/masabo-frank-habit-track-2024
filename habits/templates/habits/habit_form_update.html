@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block title %}{% if is_update %}Update{% else %}Create{% endif %} Habit{% endblock %}
+
+{% block content %}
+<div class="bg-white dark:bg-gray-800 dark:text-white max-w-2xl mx-auto p-4">
+    <div class="bg-white dark:bg-gray-800 dark:text-white bg-white rounded-lg shadow-md overflow-hidden">
+        <div class="bg-white dark:bg-gray-800 dark:text-white p-6">
+            <h2 class="bg-white dark:bg-gray-800 dark:text-white text-2xl font-bold mb-6">
+                {% if is_update %}
+                    Update Habit
+                {% else %}
+                    Create New Habit
+                {% endif %}
+            </h2>
+
+            <form method="post" class="bg-white dark:bg-gray-800 dark:text-white space-y-6">
+                {% csrf_token %}
+                
+                <div class="bg-white dark:bg-gray-800 dark:text-white grid grid-cols-1 gap-6 sm:grid-cols-2">
+                    <!-- Name field -->
+                    <div class="bg-white dark:bg-gray-800 dark:text-white sm:col-span-2">
+                        {{ form.name|as_crispy_field }}
+                    </div>
+
+                    <!-- Description field -->
+                    <div class="bg-white dark:bg-gray-800 dark:text-white sm:col-span-2">
+                        {{ form.description|as_crispy_field }}
+                    </div>
+
+                    <!-- Periodicity field -->
+                    <div>
+                        {{ form.periodicity|as_crispy_field }}
+                    </div>
+
+                    <!-- Start date field -->
+                    <div>
+                        {{ form.start_date|as_crispy_field }}
+                    </div>
+
+                    <!-- Color picker -->
+                    <div class="bg-white dark:bg-gray-800 dark:text-white sm:col-span-2">
+                        <label for="{{ form.color.id_for_label }}" class="bg-white dark:bg-gray-800 dark:text-white block text-sm font-medium text-gray-700">
+                            Color
+                        </label>
+                        <div class="bg-white dark:bg-gray-800 dark:text-white mt-1 flex items-center space-x-2">
+                            {{ form.color }}
+                            <span class="bg-white dark:bg-gray-800 dark:text-white text-sm text-gray-500">Choose a color for your habit</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white dark:bg-gray-800 dark:text-white flex justify-end space-x-4 pt-4">
+                    <a href="{% url 'habits:dashboard' %}" 
+                       class="bg-white dark:bg-gray-800 dark:text-white px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50">
+                        Cancel
+                    </a>
+                    <button type="submit" 
+                            class="bg-blue dark:bg-gray-800 dark:text-white px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700">
+                        {% if is_update %}Update{% else %}Create{% endif %} Habit
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+{% block extra_js %}
+<script>
+    // Initialize the color picker if needed
+    document.addEventListener('DOMContentLoaded', function() {
+        const colorInput = document.querySelector('input[type="color"]');
+        if (colorInput) {
+            colorInput.classList.add('h-10', 'w-10', 'rounded', 'cursor-pointer');
+        }
+    });
+</script>
+{% endblock %}
+{% endblock %}

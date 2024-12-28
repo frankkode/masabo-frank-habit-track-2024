@@ -1,0 +1,258 @@
+{% extends "base.html" %}
+
+{% block title %}Analytics - Habit Tracker{% endblock %}
+
+{% block extra_head %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+{% endblock %}
+
+{% block content %}
+<div class="bg-white dark:bg-gray-800 dark:text-white max-w-7xl mx-auto">
+    <!-- Page Header -->
+    <div class="bg-white dark:bg-gray-800 dark:text-white bg-white shadow overflow-hidden sm:rounded-lg mb-6">
+        <div class="bg-white dark:bg-gray-800 dark:text-white px-4 py-5 sm:p-6">
+            <h2 class="bg-white dark:bg-gray-800 dark:text-white text-2xl font-bold leading-7 text-gray-900 sm:text-3xl sm:truncate">
+                Analytics Overview
+            </h2>
+            <p class="bg-white dark:bg-gray-800 dark:text-white mt-1 max-w-2xl text-sm text-gray-500">
+                Track your progress and analyze your habit performance
+            </p>
+        </div>
+    </div>
+
+    <!-- Overall Stats -->
+    <div class="bg-white dark:bg-gray-800 dark:text-white grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4 mb-6">
+        <!-- Total Habits -->
+        <div class="bg-white dark:bg-gray-800 dark:text-white bg-white overflow-hidden shadow rounded-lg">
+            <div class="bg-white dark:bg-gray-800 dark:text-white p-5">
+                <div class="bg-white dark:bg-gray-800 dark:text-white flex items-center">
+                    <div class="bg-white dark:bg-gray-800 dark:text-white flex-shrink-0">
+                        <svg class="bg-white dark:bg-gray-800 dark:text-white h-6 w-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                  d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+                        </svg>
+                    </div>
+                    <div class="bg-white dark:bg-gray-800 dark:text-white ml-5 w-0 flex-1">
+                        <dl>
+                            <dt class="bg-white dark:bg-gray-800 dark:text-white text-sm font-medium text-gray-500 truncate">Active Habits</dt>
+                            <dd class="bg-white dark:bg-gray-800 dark:text-white text-2xl font-semibold text-gray-900">{{ total_habits }}</dd>
+                        </dl>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Total Completions -->
+        <div class="bg-white dark:bg-gray-800 dark:text-white bg-white overflow-hidden shadow rounded-lg">
+            <div class="bg-white dark:bg-gray-800 dark:text-white p-5">
+                <div class="bg-white dark:bg-gray-800 dark:text-white flex items-center">
+                    <div class="bg-white dark:bg-gray-800 dark:text-white flex-shrink-0">
+                        <svg class="bg-white dark:bg-gray-800 dark:text-white h-6 w-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                  d="M5 13l4 4L19 7"/>
+                        </svg>
+                    </div>
+                    <div class="bg-white dark:bg-gray-800 dark:text-white ml-5 w-0 flex-1">
+                        <dl>
+                            <dt class="bg-white dark:bg-gray-800 dark:text-white text-sm font-medium text-gray-500 truncate">Total Completions</dt>
+                            <dd class="bg-white dark:bg-gray-800 dark:text-white text-2xl font-semibold text-gray-900">{{ total_completions }}</dd>
+                        </dl>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Average Success Rate -->
+        <div class="bg-white dark:bg-gray-800 dark:text-white bg-white overflow-hidden shadow rounded-lg">
+            <div class="bg-white dark:bg-gray-800 dark:text-white p-5">
+                <div class="bg-white dark:bg-gray-800 dark:text-white flex items-center">
+                    <div class="bg-white dark:bg-gray-800 dark:text-white flex-shrink-0">
+                        <svg class="bg-white dark:bg-gray-800 dark:text-white h-6 w-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                  d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/>
+                        </svg>
+                    </div>
+                    <div class="bg-white dark:bg-gray-800 dark:text-white ml-5 w-0 flex-1">
+                        <dl>
+                            <dt class="bg-white dark:bg-gray-800 dark:text-white text-sm font-medium text-gray-500 truncate">Success Rate</dt>
+                            <dd class="bg-white dark:bg-gray-800 dark:text-white text-2xl font-semibold text-gray-900">{{ success_rate }}%</dd>
+                        </dl>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Longest Streak -->
+        <div class="bg-white dark:bg-gray-800 dark:text-white bg-white overflow-hidden shadow rounded-lg">
+            <div class="bg-white dark:bg-gray-800 dark:text-white p-5">
+                <div class="bg-white dark:bg-gray-800 dark:text-white flex items-center">
+                    <div class="bg-white dark:bg-gray-800 dark:text-white flex-shrink-0">
+                        <svg class="bg-white dark:bg-gray-800 dark:text-white h-6 w-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                  d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/>
+                        </svg>
+                    </div>
+                    <div class="bg-white dark:bg-gray-800 dark:text-white ml-5 w-0 flex-1">
+                        <dl>
+                            <dt class="bg-white dark:bg-gray-800 dark:text-white text-sm font-medium text-gray-500 truncate">Longest Streak</dt>
+                            <dd class="bg-white dark:bg-gray-800 dark:text-white text-2xl font-semibold text-gray-900">{{ longest_streak }} days</dd>
+                        </dl>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Charts Section -->
+<div class="bg-white dark:bg-gray-800 dark:text-white grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+    <!-- Completion Trends -->
+    <div class="bg-white dark:bg-gray-800 dark:text-white bg-white shadow rounded-lg p-6">
+        <h3 class="bg-white dark:bg-gray-800 dark:text-white text-lg font-medium text-gray-900 mb-4">Completion Trends</h3>
+        <div class="bg-white dark:bg-gray-800 dark:text-white h-64"> <!-- Fixed height container -->
+            <canvas id="completionTrends"></canvas>
+        </div>
+    </div>
+
+    <!-- Success Rate by Day -->
+    <div class="bg-white dark:bg-gray-800 dark:text-white bg-white shadow rounded-lg p-6">
+        <h3 class="bg-white dark:bg-gray-800 dark:text-white text-lg font-medium text-gray-900 mb-4">Success Rate by Day</h3>
+        <div class="bg-white dark:bg-gray-800 dark:text-white h-64"> <!-- Fixed height container -->
+            <canvas id="successRateByDay"></canvas>
+        </div>
+    </div>
+</div>
+    <!-- Habit Performance Table -->
+    <div class="bg-white dark:bg-gray-800 dark:text-white bg-white shadow overflow-hidden sm:rounded-lg">
+        <div class="bg-white dark:bg-gray-800 dark:text-white px-4 py-5 sm:px-6">
+            <h3 class="bg-white dark:bg-gray-800 dark:text-white text-lg leading-6 font-medium text-gray-900">
+                Habit Performance
+            </h3>
+            <p class="bg-white dark:bg-gray-800 dark:text-white mt-1 max-w-2xl text-sm text-gray-500">
+                Detailed breakdown of each habit's performance
+            </p>
+        </div>
+        <div class="bg-white dark:bg-gray-800 dark:text-white border-t border-gray-200">
+            <table class="bg-white dark:bg-gray-800 dark:text-white min-w-full divide-y divide-gray-200">
+                <thead class="bg-white dark:bg-gray-800 dark:text-white bg-gray-50">
+                    <tr>
+                        <th scope="col" class="bg-white dark:bg-gray-800 dark:text-white px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Habit
+                        </th>
+                        <th scope="col" class="bg-white dark:bg-gray-800 dark:text-white px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Streak
+                        </th>
+                        <th scope="col" class="bg-white dark:bg-gray-800 dark:text-white px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Success Rate
+                        </th>
+                        <th scope="col" class="bg-white dark:bg-gray-800 dark:text-white px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Total Completions
+                        </th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white dark:bg-gray-800 dark:text-white bg-white divide-y divide-gray-200">
+                    {% for habit in habits %}
+                    <tr>
+                        <td class="bg-white dark:bg-gray-800 dark:text-white px-6 py-4 whitespace-nowrap">
+                            <div class="bg-white dark:bg-gray-800 dark:text-white text-sm font-medium text-gray-900">{{ habit.name }}</div>
+                            <div class="bg-white dark:bg-gray-800 dark:text-white text-sm text-gray-500">{{ habit.get_periodicity_display }}</div>
+                        </td>
+                        <td class="bg-white dark:bg-gray-800 dark:text-white px-6 py-4 whitespace-nowrap">
+                            <span class="bg-white dark:bg-gray-800 dark:text-white px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                                {{ habit.get_streak }} days
+                            </span>
+                        </td>
+                        <td class="bg-white dark:bg-gray-800 dark:text-white px-6 py-4 whitespace-nowrap">
+                            <div class="bg-white dark:bg-gray-800 dark:text-white text-sm text-gray-900">{{ habit.get_completion_rate }}%</div>
+                        </td>
+                        <td class="bg-white dark:bg-gray-800 dark:text-white px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                            {{ habit.completions.count }}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Prepare chart data
+    const completionData = {{ completion_data|safe }};
+    const daySuccessData = {{ day_success_data|safe }};
+
+    // Completion Trends Chart
+    new Chart(document.getElementById('completionTrends'), {
+        type: 'line',
+        data: {
+            labels: completionData.labels,
+            datasets: [{
+                label: 'Completions',
+                data: completionData.values,
+                borderColor: 'rgb(79, 70, 229)',
+                tension: 0.1,
+                fill: false
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            plugins: {
+                legend: {
+                    display: true,
+                    position: 'top'
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        maxTicksLimit: 8
+                    }
+                },
+                x: {
+                    ticks: {
+                        maxTicksLimit: 7,
+                        maxRotation: 0
+                    }
+                }
+            }
+        }
+    });
+
+    // Success Rate by Day Chart
+    new Chart(document.getElementById('successRateByDay'), {
+        type: 'bar',
+        data: {
+            labels: daySuccessData.labels,
+            datasets: [{
+                label: 'Success Rate',
+                data: daySuccessData.values,
+                backgroundColor: 'rgba(79, 70, 229, 0.5)',
+                borderColor: 'rgb(79, 70, 229)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            plugins: {
+                legend: {
+                    display: true,
+                    position: 'top'
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    max: 100,
+                    ticks: {
+                        maxTicksLimit: 6
+                    }
+                }
+            }
+        }
+    });
+</script>
+{% endblock %}

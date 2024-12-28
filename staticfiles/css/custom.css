@@ -1,0 +1,340 @@
+/* Custom styles on top of Tailwind CSS */
+
+/* Animations */
+@keyframes slideIn {
+     0% {
+         opacity: 0;
+         transform: translateY(1rem);
+     }
+     100% {
+         opacity: 1;
+         transform: translateY(0);
+     }
+ }
+ 
+ .animate-slide-in {
+     animation: slideIn 0.3s ease-out;
+ }
+ 
+ /* Custom form styles */
+ .form-input {
+     @apply mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm;
+ }
+ 
+ .form-label {
+     @apply block text-sm font-medium text-gray-700;
+ }
+ 
+ .form-error {
+     @apply mt-2 text-sm text-red-600;
+ }
+ 
+ .form-help {
+     @apply mt-2 text-sm text-gray-500;
+ }
+ 
+ /* Custom button styles */
+ .btn {
+     @apply inline-flex justify-center rounded-md border border-transparent px-4 py-2 text-sm font-medium shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2;
+ }
+ 
+ .btn-primary {
+     @apply bg-indigo-600 text-white hover:bg-indigo-700 focus:ring-indigo-500;
+ }
+ 
+ .btn-secondary {
+     @apply bg-white text-gray-700 border-gray-300 hover:bg-gray-50 focus:ring-indigo-500;
+ }
+ 
+ .btn-danger {
+     @apply bg-red-600 text-white hover:bg-red-700 focus:ring-red-500;
+ }
+ 
+ /* Card styles */
+ .card {
+     @apply bg-white overflow-hidden shadow rounded-lg;
+ }
+ 
+ .card-header {
+     @apply px-4 py-5 border-b border-gray-200 sm:px-6;
+ }
+ 
+ .card-body {
+     @apply px-4 py-5 sm:p-6;
+ }
+ 
+ .card-footer {
+     @apply px-4 py-4 border-t border-gray-200 sm:px-6;
+ }
+ 
+ /* Habit completion states */
+ .habit-complete {
+     @apply bg-green-50;
+ }
+ 
+ .habit-incomplete {
+     @apply bg-yellow-50;
+ }
+ 
+ /* Streak badges */
+ .streak-badge {
+     @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
+ }
+ 
+ .streak-badge-success {
+     @apply bg-green-100 text-green-800;
+ }
+ 
+ .streak-badge-warning {
+     @apply bg-yellow-100 text-yellow-800;
+ }
+ 
+ /* Custom scrollbar */
+ .custom-scrollbar {
+     scrollbar-width: thin;
+     scrollbar-color: theme('colors.gray.400') theme('colors.gray.100');
+ }
+ 
+ .custom-scrollbar::-webkit-scrollbar {
+     width: 6px;
+ }
+ 
+ .custom-scrollbar::-webkit-scrollbar-track {
+     @apply bg-gray-100;
+ }
+ 
+ .custom-scrollbar::-webkit-scrollbar-thumb {
+     @apply bg-gray-400 rounded;
+ }
+ 
+ /* Loading spinner */
+ .spinner {
+     @apply animate-spin rounded-full h-5 w-5 border-2;
+     border-top-color: transparent;
+ }
+ 
+ /* Notification dot */
+ .notification-dot {
+     @apply absolute top-0 right-0 block h-2 w-2 rounded-full bg-red-400;
+ }
+ 
+ /* Custom chart styles */
+ .chart-container {
+     @apply relative h-64 w-full;
+ }
+ 
+ /* Responsive table */
+ .responsive-table {
+     @apply min-w-full divide-y divide-gray-200;
+ }
+ 
+ .responsive-table th {
+     @apply px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider;
+ }
+ 
+ .responsive-table td {
+     @apply px-6 py-4 whitespace-nowrap text-sm text-gray-500;
+ }
+ 
+ /* Dark mode support */
+ @media (prefers-color-scheme: dark) {
+     [data-theme="system"] {
+         @apply bg-gray-900 text-white;
+     }
+     
+     [data-theme="system"] .card {
+          @apply bg-gray-800 text-white;
+      }
+      
+      [data-theme="system"] .btn-secondary {
+          @apply bg-gray-700 text-white border-gray-600;
+      }
+      
+      [data-theme="system"] .form-input {
+          @apply bg-gray-700 border-gray-600 text-white;
+      }
+      
+      [data-theme="system"] .habit-complete {
+          @apply bg-green-900;
+      }
+      
+      [data-theme="system"] .habit-incomplete {
+          @apply bg-yellow-900;
+      }
+  }
+  
+  /* Progress ring component */
+  .progress-ring {
+      @apply relative inline-flex;
+  }
+  
+  .progress-ring-circle {
+      @apply transition-all duration-300 ease-in-out;
+      transform: rotate(-90deg);
+      transform-origin: 50% 50%;
+  }
+  
+  /* Calendar heatmap */
+  .calendar-heatmap {
+      @apply grid gap-1;
+      grid-template-columns: repeat(auto-fill, minmax(2.5rem, 1fr));
+  }
+  
+  .calendar-day {
+      @apply aspect-square rounded-sm;
+  }
+  
+  /* Level indicators */
+  .level-0 { @apply bg-gray-100; }
+  .level-1 { @apply bg-green-100; }
+  .level-2 { @apply bg-green-200; }
+  .level-3 { @apply bg-green-300; }
+  .level-4 { @apply bg-green-400; }
+  
+  /* Tooltip */
+  .tooltip {
+      @apply invisible absolute z-10 px-3 py-2 text-sm font-medium text-white bg-gray-900 rounded-lg shadow-sm opacity-0 tooltip dark:bg-gray-700;
+  }
+  
+  .tooltip-trigger:hover .tooltip {
+      @apply visible opacity-100;
+  }
+  
+  /* Stats card */
+  .stats-card {
+      @apply flex flex-col items-center p-6 bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300;
+  }
+  
+  .stats-icon {
+      @apply w-12 h-12 text-indigo-500 mb-4;
+  }
+  
+  .stats-value {
+      @apply text-3xl font-bold text-gray-900 mb-2;
+  }
+  
+  .stats-label {
+      @apply text-sm text-gray-500;
+  }
+  .progress-shell {
+    height: 20px;
+    width: 100%;
+    border-radius: 13px;
+    background: linear-gradient(to right, #4f46e5, #06b6d4);
+    overflow: hidden;
+    margin: 10px 0;
+ }
+ 
+ .progress-bar {
+    background: #1f2937;
+    height: 20px;
+    float: right;
+    transition: width 0.3s ease;
+ }
+ 
+ .habit-card {
+    border-radius: 8px;  
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+    transition: transform 0.2s ease;
+ }
+ 
+ .habit-card:hover {
+    transform: translateY(-2px);
+ }
+ 
+ /* Dark mode styles */
+ .dark {
+    color-scheme: dark;
+ }
+ 
+ .dark body {
+    background-color: #111827;
+    color: #f3f4f6;
+ }
+ 
+ .dark .bg-white {
+    background-color: #1f2937;
+ }
+ 
+ .dark .text-gray-900 {
+    color: #f3f4f6;
+ }
+ 
+ .dark .text-gray-600,
+ .dark .text-gray-500 {
+    color: #9ca3af;
+ }
+ 
+ .dark .habit-card {
+    background-color: #374151;
+    border: 1px solid #4b5563;
+ }
+ 
+ .dark .shadow-lg {
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+ }
+ 
+ .dark .progress-shell {
+    background: linear-gradient(to right, #4338ca, #0891b2);
+ }
+ 
+ .dark .progress-bar {
+    background: #111827;
+ }
+ 
+ .dark button:not([disabled]),
+ .dark a:not(.text-white) {
+    color: #d1d5db;
+ }
+ 
+ .dark button:hover:not([disabled]),
+ .dark a:hover:not(.text-white) {
+    color: #f3f4f6;
+ }
+ 
+ .dark .hover\:bg-gray-100:hover {
+    background-color: #374151;
+ }
+ 
+ .dark .modal-content {
+    background-color: #1f2937;
+    border: 1px solid #4b5563;
+ }
+ 
+ .dark .bg-green-50 {
+    background-color: rgba(16, 185, 129, 0.1);
+ }
+ 
+ .dark .text-green-600 {
+    color: #34d399;
+ }
+ 
+ .dark .notification {
+    background-color: #374151;
+    border: 1px solid #4b5563;
+ }
+ 
+ .dark .card {
+    background-color: #1f2937;
+    border-color: #374151;
+ }
+ 
+ .dark input,
+ .dark select,
+ .dark textarea {
+    background-color: #374151;
+    border-color: #4b5563;
+    color: #f3f4f6;
+ }
+ 
+ .dark input::placeholder,
+ .dark select::placeholder,
+ .dark textarea::placeholder {
+    color: #9ca3af;
+ }
+ 
+ .dark .border-t,
+ .dark .border-b {
+    border-color: #374151;
+ }

@@ -1,0 +1,288 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Habit Tracker{% endblock %}</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{% static 'css/custom.css' %}">
+    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#3B82F6',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Theme Toggle Script -->
+    <script>
+        // Check for saved theme preference, otherwise use system preference
+        if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark')
+        } else {
+            document.documentElement.classList.remove('dark')
+        }
+
+        function toggleDarkMode() {
+            if (document.documentElement.classList.contains('dark')) {
+                document.documentElement.classList.remove('dark')
+                localStorage.theme = 'light'
+            } else {
+                document.documentElement.classList.add('dark')
+                localStorage.theme = 'dark'
+            }
+        }
+    </script>
+
+    {% block extra_head %}{% endblock %}
+</head>
+<body class="bg-white dark:bg-gray-800 dark:text-white bg-gray-100">
+    <div class="bg-white dark:bg-gray-800 dark:text-white flex min-h-screen">
+        <!-- Mobile Menu Button - Only visible on small screens -->
+        <button 
+            class="bg-white dark:bg-gray-800 dark:text-white lg:hidden fixed top-4 left-4 z-50 p-2 rounded-md bg-indigo-600 text-white" 
+            onclick="toggleSidebar()"
+            id="mobile-menu-button">
+            <i data-lucide="menu" class="bg-white dark:bg-gray-800 dark:text-white h-6 w-6"></i>
+        </button>
+
+        <!-- Sidebar Navigation - Hidden on mobile by default -->
+        <div id="sidebar" class="bg-white dark:bg-gray-800 dark:text-white fixed inset-y-0 left-0 transform -translate-x-full lg:translate-x-0 lg:relative lg:flex lg:w-64 transition-transform duration-300 ease-in-out bg-white shadow-lg z-40">
+            <div class="bg-white dark:bg-gray-800 dark:text-white flex flex-col h-full">
+                <div class="bg-white dark:bg-gray-800 dark:text-white p-6">
+                    <div class="bg-white dark:bg-gray-800 dark:text-white flex items-center mb-8">
+                        <i data-lucide="activity" class="bg-white dark:bg-gray-800 dark:text-white h-6 w-6 mr-2 text-indigo-600"></i>
+                        <h1 class="bg-white dark:bg-gray-800 dark:text-white text-2xl font-bold text-gray-800">Habit Tracker</h1>
+                    </div>
+                    
+                    <nav class="bg-white dark:bg-gray-800 dark:text-white space-y-2">
+                        <a href="{% url 'habits:dashboard' %}" 
+                           class="bg-white dark:bg-gray-800 dark:text-white flex items-center p-3 rounded-lg w-full {% if request.resolver_match.url_name == 'dashboard' %}bg-indigo-50 text-indigo-600{% else %}text-gray-600 hover:bg-gray-50{% endif %}">
+                            <i data-lucide="home" class="bg-white dark:bg-gray-800 dark:text-white mr-3 h-5 w-5"></i>
+                            Dashboard
+                        </a>
+
+                        <a href="{% url 'habits:analytics' %}"
+                           class="bg-white dark:bg-gray-800 dark:text-white flex items-center p-3 rounded-lg w-full {% if request.resolver_match.url_name == 'analytics' %}bg-indigo-50 text-indigo-600{% else %}text-gray-600 hover:bg-gray-50{% endif %}">
+                            <i data-lucide="bar-chart-2" class="bg-white dark:bg-gray-800 dark:text-white mr-3 h-5 w-5"></i>
+                            Analytics
+                        </a>
+
+                        <a href="{% url 'habits:habit_create' %}"
+                           class="bg-white dark:bg-gray-800 dark:text-white flex items-center p-3 rounded-lg w-full {% if request.resolver_match.url_name == 'habit_create' %}bg-indigo-50 text-indigo-600{% else %}text-gray-600 hover:bg-gray-50{% endif %}">
+                            <i data-lucide="plus-circle" class="bg-white dark:bg-gray-800 dark:text-white mr-3 h-5 w-5"></i>
+                            Add Habit
+                        </a>
+                        
+                    </nav>
+                </div>
+
+                <!-- User Profile Section -->
+                <div class="bg-white dark:bg-gray-800 dark:text-white mt-auto border-t border-gray-200 p-4">
+                    <div class="bg-white dark:bg-gray-800 dark:text-white flex items-center">{% if user.profile.avatar %}
+                        <a href="{% url 'users:profile' %}"><img class="bg-white dark:bg-gray-800 dark:text-white h-16 w-16 object-cover rounded-full profile-picture"
+     src="{{ user.profile.avatar.url }}"
+     alt="Profile picture"></a>
+     {% else %} <a href="{% url 'users:profile' %}">
+        <img class="bg-white dark:bg-gray-800 dark:text-white h-16 w-16 object-cover rounded-full profile-picture" 
+             src="{% static 'img/avatar.png' %}" 
+             alt="Profile picture">
+    </a>
+     {% endif %}
+     {% if user.is_authenticated %}
+     <div class="bg-white dark:bg-gray-800 dark:text-white ml-3">
+         <a href="{% url 'users:profile' %}">
+             <p class="bg-white dark:bg-gray-800 dark:text-white text-sm font-medium text-gray-700">{{ user.username }}</p>
+         </a>
+         <form method="post" action="{% url 'users:logout' %}" class="bg-white dark:bg-gray-800 dark:text-white mt-1">
+             {% csrf_token %}
+             <button type="submit" class="bg-white dark:bg-gray-800 dark:text-white text-xs text-gray-500 hover:text-indigo-600">
+                 Sign out
+             </button>
+         </form>
+     </div>
+  {% else %}
+     <div class="bg-white dark:bg-gray-800 dark:text-white ml-3">
+         <a href="{% url 'users:login' %}" class="bg-white dark:bg-gray-800 dark:text-white text-xs text-gray-500 hover:text-indigo-600">
+             Sign in
+         </a>
+     </div>
+  {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content Area -->
+        <div class="bg-white dark:bg-gray-800 dark:text-white flex-1 lg:ml-0">
+            <!-- Top Navigation Bar -->
+            <div class="bg-white dark:bg-gray-800 dark:text-white bg-white shadow-sm sticky top-0 z-30">
+                
+                <div class="bg-white dark:bg-gray-800 dark:text-white flex justify-between items-center py-4 px-8">
+                    <div class="bg-white dark:bg-gray-800 dark:text-white flex items-center">
+                        <h2 class="bg-white dark:bg-gray-800 dark:text-white text-xl font-semibold text-gray-800">
+                            {% block page_title %}{% endblock %}
+                        </h2>
+                    </div>
+  <!-- Theme Toggle -->
+<button onclick="toggleDarkMode()" 
+class="p-2 text-gray-400 hover:text-gray-500 mr-2 bg-white dark:bg-gray-800">
+<i data-lucide="moon" class="h-6 w-6 dark:hidden"></i>
+<i data-lucide="sun" class="h-6 w-6 hidden dark:block"></i>
+</button>                  
+                    <!-- Notifications -->
+<div class="bg-white dark:bg-gray-800 dark:text-white relative" 
+x-data="{ 
+    open: false,
+    markAsRead(id) {
+        fetch(`/notifications/${id}/mark-read/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}'
+            }
+        }).then(() => {
+            this.$refs[`notification-${id}`].remove();
+        });
+    }
+}">
+<button @click="open = !open" 
+       class="bg-white dark:bg-gray-800 dark:text-white p-2 text-gray-400 hover:text-gray-500 relative">
+   <i data-lucide="bell" class="bg-white dark:bg-gray-800 dark:text-white h-6 w-6"></i>
+   {% if notifications %}
+       <span class="bg-white dark:bg-gray-800 dark:text-white absolute top-0 right-0 block h-2 w-2 rounded-full bg-red-400"></span>
+   {% endif %}
+</button>
+
+<!-- Notifications Dropdown -->
+<div x-show="open" 
+    @click.away="open = false" 
+    class="bg-white dark:bg-gray-800 dark:text-white absolute right-0 mt-2 w-80 bg-white rounded-md shadow-lg py-1 z-50">
+   {% for notification in notifications %}
+       <div x-ref="notification-{{ notification.id }}"
+            class="bg-white dark:bg-gray-800 dark:text-white px-4 py-2 hover:bg-gray-50 flex justify-between items-center">
+           <div>
+               <p class="bg-white dark:bg-gray-800 dark:text-white text-sm text-gray-600">{{ notification.message }}</p>
+               <span class="bg-white dark:bg-gray-800 dark:text-white text-xs text-gray-400">{{ notification.created_at|timesince }} ago</span>
+           </div>
+           <button @click="markAsRead({{ notification.id }})" 
+        class="bg-white dark:bg-gray-800 dark:text-white text-gray-400 hover:text-gray-600">
+    <i data-lucide="x" class="bg-white dark:bg-gray-800 dark:text-white h-4 w-4"></i>
+</button>
+       </div>
+   {% empty %}
+       <div class="bg-white dark:bg-gray-800 dark:text-white px-4 py-2 text-sm text-gray-500">No new notifications</div>
+   {% endfor %}
+</div>
+
+</div>
+                </div>
+                
+            </div>
+
+            <!-- Main Content -->
+            <div class="bg-white dark:bg-gray-800 dark:text-white p-4 sm:p-6 md:p-8">
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="bg-white dark:bg-gray-800 dark:text-white mb-4 p-4 rounded-md {% if message.tags == 'success' %}bg-green-50 text-green-800{% elif message.tags == 'error' %}bg-red-50 text-red-800{% else %}bg-blue-50 text-blue-800{% endif %}"
+                             x-data="{ show: true }" 
+                             x-show="show" 
+                             x-init="setTimeout(() => show = false, 3000)">
+                            <div class="bg-white dark:bg-gray-800 dark:text-white flex">
+                                <div class="bg-white dark:bg-gray-800 dark:text-white flex-shrink-0">
+                                    {% if message.tags == 'success' %}
+                                        <i data-lucide="check-circle" class="bg-white dark:bg-gray-800 dark:text-white h-5 w-5 text-green-400"></i>
+                                    {% elif message.tags == 'error' %}
+                                        <i data-lucide="x-circle" class="bg-white dark:bg-gray-800 dark:text-white h-5 w-5 text-red-400"></i>
+                                    {% else %}
+                                        <i data-lucide="info" class="bg-white dark:bg-gray-800 dark:text-white h-5 w-5 text-blue-400"></i>
+                                    {% endif %}
+                                </div>
+                                <div class="bg-white dark:bg-gray-800 dark:text-white ml-3">
+                                    <p class="bg-white dark:bg-gray-800 dark:text-white text-sm">{{ message }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+
+                {% block content %}{% endblock %}
+            </div>
+        </div>
+    </div>
+    <script>
+        const theme = "{{ request.user.profile.theme }}";
+        setTheme(theme);
+        </script>
+        
+        <style>
+        :root[class='dark'] {
+            --bg-primary: #1a1a1a;
+            --text-primary: #ffffff;
+        }
+        
+        :root[class='light'] {
+            --bg-primary: #ffffff;
+            --text-primary: #000000;
+        }
+        </style>
+    <!-- Initialize Lucide icons -->
+    <script>
+
+        lucide.createIcons();
+
+        // Mobile menu toggle function
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const currentTransform = sidebar.style.transform;
+            
+            if (currentTransform === 'translateX(0px)' || !currentTransform) {
+                sidebar.style.transform = 'translateX(-100%)';
+            } else {
+                sidebar.style.transform = 'translateX(0)';
+            }
+        }
+
+        // Close sidebar when clicking outside on mobile
+        document.addEventListener('click', function(event) {
+            const sidebar = document.getElementById('sidebar');
+            const mobileMenuButton = document.getElementById('mobile-menu-button');
+            
+            if (window.innerWidth < 1024) { // Only on mobile/tablet
+                if (!sidebar.contains(event.target) && !mobileMenuButton.contains(event.target)) {
+                    sidebar.style.transform = 'translateX(-100%)';
+                }
+            }
+        });
+
+        // Handle window resize
+        window.addEventListener('resize', function() {
+            const sidebar = document.getElementById('sidebar');
+            if (window.innerWidth >= 1024) { // lg breakpoint
+                sidebar.style.transform = 'translateX(0)';
+            } else {
+                sidebar.style.transform = 'translateX(-100%)';
+            }
+        });
+
+    </script>
+
+    <!-- Additional JavaScript -->
+    {% block extra_js %}{% endblock %}
+</body>
+</html>
