@@ -35,9 +35,8 @@ class Habit(models.Model):
         return f"{self.name} ({self.get_periodicity_display()})"
 
     def save(self, *args, **kwargs):
-        """Set default target completions on creation."""
         if not self.pk:  # Only on creation
-            self.target_completions = 4 if self.periodicity == 'weekly' else 30
+            self.target_completions = 1 if self.periodicity == 'daily' else 7
         super().save(*args, **kwargs)
 
     def clean(self):
@@ -60,9 +59,12 @@ class Habit(models.Model):
         return self.get_completion_percentage()
 
     def get_completion_percentage(self):
-        """Calculate completion percentage."""
+        """Calculate completion percentage based on target"""
         completed = self.completions.count()
-        return min(round((completed / self.target_completions) * 100), 100)
+        if self.target_completions == 0:
+            return 0
+        percentage = (completed / self.target_completions) * 100
+        return min(round(percentage), 100)
 
     def get_completion_status(self):
         """Check if habit is completed for current period."""
@@ -166,13 +168,11 @@ class Habit(models.Model):
         """Check if habit has reached target completions."""
         return self.completions.count() >= self.target_completions
     def get_completion_percentage(self):
-        """Calculate completion percentage with reset after target."""
-        total_completions = self.completions.count()
-        cycles_completed = total_completions // self.target_completions
-        current_cycle_completions = total_completions % self.target_completions
-        
-        # Calculate percentage for current cycle
-        return min(round((current_cycle_completions / self.target_completions) * 100), 100)
+        completions_count = self.completions.count()
+        if self.target_completions > 0:
+            return int((completions_count / self.target_completions) * 100)
+        else:
+            return 0
 
     def get_stats(self):
         """Get habit statistics including historical data."""

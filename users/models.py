@@ -34,7 +34,7 @@ class UserProfile(models.Model):
    )
    notification_preferences = models.JSONField(
        default=dict,
-       help_text="User notification preferences"
+       help_text="User notification preferences", blank=True, 
    )
    daily_reminder = models.TimeField(null=True, blank=True)
    daily_reminder_time = models.TimeField(null=True, blank=True)

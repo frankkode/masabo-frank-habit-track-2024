@@ -1,10 +1,124 @@
 from typing import List, Dict, Any
-from datetime import datetime, timedelta
 from django.utils import timezone
 from django.db.models import Count, Q
 from functools import reduce
 from .models import Habit, HabitCompletion
 
+# habits/analytics.py
+from django.utils import timezone
+from datetime import timedelta
+from collections import defaultdict
+
+class HabitAnalytics:
+    def __init__(self, habit):
+        self.habit = habit
+
+    def get_completion_rate(self, days=30):
+        """Calculate completion rate for the last n days"""
+        end_date = timezone.now()
+        start_date = end_date - timedelta(days=days)
+        
+        completions = self.habit.completions.filter(
+            completed_at__range=(start_date, end_date)
+        ).count()
+        
+        expected = days if self.habit.periodicity == 'daily' else days // 7
+        if expected == 0:
+            return 0
+        
+        return round((completions / expected) * 100, 2)
+
+    def get_progress_data(self, days=14):
+        """Get daily progress data for the specified period"""
+        end_date = timezone.now().date()
+        start_date = end_date - timedelta(days=days-1)
+        
+        # Get all completions within date range
+        completions = self.habit.completions.filter(
+            completed_at__date__range=(start_date, end_date)
+        ).values_list('completed_at__date', flat=True)
+        
+        # Create daily progress data
+        progress_data = []
+        current_date = start_date
+        
+        while current_date <= end_date:
+            progress_data.append({
+                'date': current_date,
+                'completed': current_date in completions,
+                'weekday': current_date.strftime('%A')
+            })
+            current_date += timedelta(days=1)
+            
+        return progress_data
+
+    def get_longest_streak(self):
+        """Calculate the longest streak ever achieved"""
+        completions = list(self.habit.completions.order_by(
+            'completed_at'
+        ).values_list('completed_at__date', flat=True))
+        
+        if not completions:
+            return 0
+            
+        longest_streak = current_streak = 1
+        
+        for i in range(1, len(completions)):
+            expected_date = completions[i-1] + timedelta(
+                days=1 if self.habit.periodicity == 'daily' else 7
+            )
+            
+            if completions[i] == expected_date:
+                current_streak += 1
+                longest_streak = max(longest_streak, current_streak)
+            else:
+                current_streak = 1
+                
+        return longest_streak
+
+    def get_weekly_patterns(self):
+        """Analyze completion patterns by day of week"""
+        completions = self.habit.completions.all()
+        
+        # Count completions by weekday
+        weekday_counts = defaultdict(int)
+        total_weeks = defaultdict(int)
+        
+        start_date = timezone.now().date() - timedelta(days=90)  # analyze last 90 days
+        current_date = timezone.now().date()
+        
+        # Count total occurrences of each weekday
+        while current_date >= start_date:
+            total_weeks[current_date.weekday()] += 1
+            current_date -= timedelta(days=1)
+        
+        # Count completions by weekday
+        for completion in completions.filter(completed_at__date__gte=start_date):
+            weekday = completion.completed_at.weekday()
+            weekday_counts[weekday] += 1
+        
+        # Calculate completion rate for each weekday
+        patterns = {}
+        for weekday in range(7):
+            if total_weeks[weekday] == 0:
+                patterns[weekday] = 0
+            else:
+                patterns[weekday] = round(
+                    (weekday_counts[weekday] / total_weeks[weekday]) * 100,
+                    2
+                )
+                
+        return patterns
+
+    def get_summary_stats(self):
+        """Get summary statistics for the habit"""
+        return {
+            'total_completions': self.habit.completions.count(),
+            'current_streak': self.habit.get_streak(),
+            'longest_streak': self.get_longest_streak(),
+            'completion_rate': self.get_completion_rate(),
+            'weekly_patterns': self.get_weekly_patterns(),
+        }
 def get_habit_stats(habit: Habit, days: int = 30) -> Dict[str, Any]:
     """Get comprehensive statistics for a single habit"""
     end_date = timezone.now()

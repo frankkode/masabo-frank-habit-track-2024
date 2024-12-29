@@ -325,34 +325,33 @@ class BulkHabitCompletionView(LoginRequiredMixin, View):
 class HabitAnalyticsView(LoginRequiredMixin, View):
     def get(self, request, habit_id):
         habit = get_object_or_404(Habit, id=habit_id, user=request.user)
-        end_date = timezone.now().date()
-        start_date = end_date - timedelta(days=30)
+        analytics = HabitAnalytics(habit)
         
-        completions = habit.habitcompletion_set.filter(
-            date__range=[start_date, end_date]
-        )
-        
-        analytics = {
+        response_data = {
             'habit_id': habit.id,
             'name': habit.name,
-            'completion_rate': (completions.count() / 30) * 100,
-            'total_completions': completions.count(),
-            'completion_history': list(completions.values_list('date', flat=True)),
-            'current_streak': self._calculate_streak(habit)
+            'analytics': {
+                'completion_rate': analytics.get_completion_rate(),
+                'total_completions': habit.completions.count(),
+                'current_streak': habit.get_streak(),
+                'longest_streak': analytics.get_longest_streak(),
+                'progress_data': analytics.get_progress_data(days=30),
+                'weekly_patterns': analytics.get_weekly_patterns()
+            }
         }
+
+        # Add detailed completion history
+        completion_history = []
+        for data in analytics.get_progress_data(days=30):
+            completion_history.append({
+                'date': data['date'].isoformat(),
+                'completed': data['completed'],
+                'weekday': data['weekday']
+            })
         
-        return JsonResponse(analytics)
-    
-    def _calculate_streak(self, habit):
-        today = timezone.now().date()
-        streak = 0
-        current_date = today
-        
-        while habit.habitcompletion_set.filter(date=current_date).exists():
-            streak += 1
-            current_date -= timedelta(days=1)
-        
-        return streak
+        response_data['completion_history'] = completion_history
+
+        return JsonResponse(response_data)
     
 class AnalyticsView(LoginRequiredMixin, TemplateView):
     template_name = 'habits/analytics.html'

@@ -254,5 +254,16 @@
             }
         }
     });
+    fetch(`/api/habits/${habitId}/analytics/`)
+    .then(response => response.json())
+    .then(data => {
+        // Access analytics data
+        const completionRate = data.analytics.completion_rate;
+        const currentStreak = data.analytics.current_streak;
+        const weeklyPatterns = data.analytics.weekly_patterns;
+        
+        // Update UI with analytics data
+        updateAnalyticsDisplay(data);
+    });
 </script>
 {% endblock %}
