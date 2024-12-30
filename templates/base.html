@@ -14,10 +14,10 @@
     
     <!-- Custom CSS -->
     <link rel="stylesheet" href="{% static 'css/custom.css' %}">
-    
     <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.8.2/dist/alpine.min.js" defer></script>
     <script>
         tailwind.config = {
             darkMode: 'class',
@@ -57,10 +57,10 @@
     <div class="bg-white dark:bg-gray-800 dark:text-white flex min-h-screen">
         <!-- Mobile Menu Button - Only visible on small screens -->
         <button 
-            class="bg-white dark:bg-gray-800 dark:text-white lg:hidden fixed top-4 left-4 z-50 p-2 rounded-md bg-indigo-600 text-white" 
+            class=" dark:bg-gray-800 dark:text-white lg:hidden fixed top-4 left-4 z-50 p-2 rounded-md bg-indigo-600 text-white" 
             onclick="toggleSidebar()"
             id="mobile-menu-button">
-            <i data-lucide="menu" class="bg-white dark:bg-gray-800 dark:text-white h-6 w-6"></i>
+            <i data-lucide="menu" class=" dark:bg-gray-800 dark:text-white h-6 w-6"></i>
         </button>
 
         <!-- Sidebar Navigation - Hidden on mobile by default -->
@@ -198,31 +198,10 @@ x-data="{
 
             <!-- Main Content -->
             <div class="bg-white dark:bg-gray-800 dark:text-white p-4 sm:p-6 md:p-8">
-                {% if messages %}
-                    {% for message in messages %}
-                        <div class="bg-white dark:bg-gray-800 dark:text-white mb-4 p-4 rounded-md {% if message.tags == 'success' %}bg-green-50 text-green-800{% elif message.tags == 'error' %}bg-red-50 text-red-800{% else %}bg-blue-50 text-blue-800{% endif %}"
-                             x-data="{ show: true }" 
-                             x-show="show" 
-                             x-init="setTimeout(() => show = false, 3000)">
-                            <div class="bg-white dark:bg-gray-800 dark:text-white flex">
-                                <div class="bg-white dark:bg-gray-800 dark:text-white flex-shrink-0">
-                                    {% if message.tags == 'success' %}
-                                        <i data-lucide="check-circle" class="bg-white dark:bg-gray-800 dark:text-white h-5 w-5 text-green-400"></i>
-                                    {% elif message.tags == 'error' %}
-                                        <i data-lucide="x-circle" class="bg-white dark:bg-gray-800 dark:text-white h-5 w-5 text-red-400"></i>
-                                    {% else %}
-                                        <i data-lucide="info" class="bg-white dark:bg-gray-800 dark:text-white h-5 w-5 text-blue-400"></i>
-                                    {% endif %}
-                                </div>
-                                <div class="bg-white dark:bg-gray-800 dark:text-white ml-3">
-                                    <p class="bg-white dark:bg-gray-800 dark:text-white text-sm">{{ message }}</p>
-                                </div>
-                            </div>
-                        </div>
-                    {% endfor %}
-                {% endif %}
+                
 
-                {% block content %}{% endblock %}
+                {% block content %}
+                {% endblock %}
             </div>
         </div>
     </div>

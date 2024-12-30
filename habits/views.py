@@ -1,7 +1,7 @@
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, redirect
 from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
 from django.views import View
@@ -11,8 +11,11 @@ from django.contrib import messages
 from .models import Habit, HabitCompletion, Notification
 from django.views.generic import TemplateView
 import json
+from celery import shared_task
+from django.core.mail import send_mail
 from .forms import HabitForm, HabitCompletionForm
 from datetime import timedelta
+
 
 
 class BaseView(LoginRequiredMixin):
@@ -361,6 +364,7 @@ class AnalyticsView(LoginRequiredMixin, TemplateView):
         habits = Habit.objects.filter(user=self.request.user)
         context['habits'] = habits
         return context
+    
 class HabitCreateView(LoginRequiredMixin, CreateView):
     model = Habit
     fields = ['name', 'description', 'periodicity']
@@ -524,3 +528,12 @@ def manual_complete_habit(request, habit_id):
         
         return JsonResponse({'status': 'success'})
     return JsonResponse({'status': 'error'})
+from habits.tasks import send_notification_email, analyze_habits
+def test_email(request):
+    send_notification_email.delay(
+        request.user.id,
+        "Test Email",
+        "This is a test email"
+    )
+    messages.success(request, "Test email sent!")
+    return redirect('habits:dashboard')

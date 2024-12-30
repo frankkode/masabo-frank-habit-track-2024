@@ -2,168 +2,270 @@
 {% load static %}
 {% load crispy_forms_tags %}
 
-{% block title %}Profile - Habit Tracker{% endblock %}
+{% block title %}Profile Settings | {{ user.get_full_name|default:user.username }}{% endblock %}
 
 {% block content %}
-<div class="max-w-7xl mx-auto">
-   <!-- Profile Header -->
-   <div class="bg-white dark:bg-gray-800 rounded-lg shadow mb-6 p-6">
-       <div class="md:flex md:items-center md:justify-between">
-           <div class="flex items-center">
-               <img class="h-24 w-24 rounded-full object-cover border-4 border-white shadow" 
-                    src="{{ user.profile.avatar.url }}"
-                    alt="{{ user.profile.display_name }}">
-               <div class="ml-6">
-                   <h2 class="text-2xl font-bold text-gray-900 dark:text-white">
-                       {{ user.profile.display_name }}
-                   </h2>
-                   <div class="mt-1 flex flex-col sm:flex-row sm:flex-wrap sm:space-x-6">
-                       <div class="mt-2 flex items-center text-sm text-gray-500">
-                           <i data-lucide="mail" class="mr-1.5 h-5 w-5"></i>
-                           {{ user.email }}
-                       </div>
-                       <div class="mt-2 flex items-center text-sm text-gray-500">
-                           <i data-lucide="clock" class="mr-1.5 h-5 w-5"></i>
-                           Member since {{ user.date_joined|date:"F j, Y" }}
-                       </div>
-                   </div>
-               </div>
-           </div>
-       </div>
-   </div>
+<div class="max-w-7xl mx-auto px-4 py-8">
+    <!-- Messages -->
+    {% if messages %}
+    <div class="mb-6">
+        {% for message in messages %}
+        <div class="p-4 rounded-md {% if message.tags == 'success' %}bg-green-50 text-green-800{% elif message.tags == 'error' %}bg-red-50 text-red-800{% endif %}">
+            {{ message }}
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
 
-   <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-       <!-- Profile Stats -->
-       <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-           <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Profile Stats</h3>
-           <div class="space-y-4">
-               <div class="flex justify-between">
-                   <span class="text-gray-600 dark:text-gray-400">Active Habits</span>
-                   <span class="font-semibold">{{ active_habits }}</span>
-               </div>
-               <div class="flex justify-between">
-                   <span class="text-gray-600 dark:text-gray-400">Current Timezone</span>
-                   <span class="font-semibold">{{ user.profile.timezone }}</span>
-               </div>
-               <div class="flex justify-between">
-                   <span class="text-gray-600 dark:text-gray-400">Theme</span>
-                   <span class="font-semibold capitalize">{{ user.profile.theme }}</span>
-               </div>
-               <div class="flex justify-between items-center">
-                <span class="text-gray-600 dark:text-gray-400">Download your Data</span>
-                <a href="{% url 'users:export_data' %}" class="flex items-center text-indigo-600 hover:text-indigo-800 dark:text-indigo-400 dark:hover:text-indigo-300">
-                    <i data-lucide="download" class="w-5 h-5 mr-1"></i>
-                    <span>Download</span>
-                </a>
+    <!-- Profile Header -->
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden">
+        <div class="p-6">
+            <div class="flex flex-col md:flex-row items-center">
+                <!-- Profile Picture -->
+                <div class="relative">
+                    <img id="preview-avatar" 
+                         class="h-32 w-32 rounded-full object-cover border-4 border-white shadow"
+                         src="{{ user.profile.avatar.url|default:'/static/images/default-avatar.png' }}" 
+                         alt="Profile picture">
+                    <div class="absolute bottom-0 right-0">
+                        <label for="id_avatar" class="cursor-pointer bg-white dark:bg-gray-700 rounded-full p-2 shadow-lg hover:bg-gray-50">
+                            <i data-lucide="camera" class="h-5 w-5 text-gray-600"></i>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Profile Info -->
+                <div class="md:ml-6 mt-4 md:mt-0 text-center md:text-left">
+                    <h1 class="text-2xl font-bold text-gray-900 dark:text-white">
+                        {{ user.profile.user.get_full_name|default:user.username }}
+                    </h1>
+                    <div class="mt-2 text-gray-600 dark:text-gray-300">
+                        <p>{{ user.email }}</p>
+                        <p class="text-sm">Member since {{ user.date_joined|date:"F j, Y" }}</p>
+                        {% if user.profile.bio %}
+                            <p class="mt-2 text-sm">{{ user.profile.bio }}</p>
+                        {% endif %}
+                    </div>
+                </div>
             </div>
-           </div>
-       </div>
+        </div>
+    </div>
 
-       <!-- Settings Form -->
-       <div class="md:col-span-2 bg-white dark:bg-gray-800 rounded-lg shadow">
-           <form method="post" enctype="multipart/form-data">
-               {% csrf_token %}
-               
-               <!-- Personal Information -->
-               <div class="p-6 border-b dark:border-gray-700">
-                   <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Personal Information</h3>
-                   <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
-                       {{ form.first_name|as_crispy_field }}
-                       {{ form.last_name|as_crispy_field }}
-                       {{ form.email|as_crispy_field }}
-                       {{ form.bio|as_crispy_field }}
-                       {{ form.avatar|as_crispy_field }}
-                   </div>
-               </div>
-
-               <!-- Preferences -->
-               <div class="p-6 border-b dark:border-gray-700">
-                   <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Preferences</h3>
-                   <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
-                       {{ form.timezone|as_crispy_field }}
-                       {{ form.theme|as_crispy_field }}
-                       {{ form.daily_reminder_time }}
-                       {% if form.daily_reminder_time.errors %}
-                       <p class="text-red-500 text-xs italic">{{ form.daily_reminder_time.errors.0 }}</p>
-                   {% endif %}
-                   </div>
-               </div>
-
-               <!-- Notification Settings -->
-<div class="p-6">
-    <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Notification Settings</h3>
-    <div class="space-y-4">
-        <!-- Email Notifications -->
-        <div class="flex items-center justify-between">
-            <div>
-                <label class="text-sm font-medium text-gray-700 dark:text-gray-300">
-                    Email Notifications
-                </label>
-                <p class="text-sm text-gray-500">Receive updates about your habits via email</p>
+    <!-- Main Content Grid -->
+    <div class="mt-6 grid grid-cols-1 gap-6 md:grid-cols-3">
+        <!-- Sidebar -->
+        <div class="space-y-6">
+            <!-- Quick Stats -->
+            <div class="bg-white dark:bg-gray-800 shadow rounded-lg p-6">
+                <h2 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Account Overview</h2>
+                <div class="space-y-4">
+                    <div class="flex justify-between text-sm">
+                        <span class="text-gray-600 dark:text-gray-400">Timezone</span>
+                        <span class="font-medium text-gray-900 dark:text-white">{{ user.profile.timezone }}</span>
+                    </div>
+                    <div class="flex justify-between text-sm">
+                        <span class="text-gray-600 dark:text-gray-400">Theme</span>
+                        <span class="font-medium text-gray-900 dark:text-white capitalize">{{ user.profile.theme }}</span>
+                    </div>
+                    <div class="flex justify-between text-sm">
+                        <span class="text-gray-600 dark:text-gray-400">Email Notifications</span>
+                        <span class="font-medium text-gray-900 dark:text-white">
+                            {% if user.profile.notification_preferences.email_notifications %}
+                                Enabled
+                            {% else %}
+                                Disabled
+                            {% endif %}
+                        </span>
+                    </div>
+                </div>
             </div>
-            <input type="checkbox" 
-                   name="email_notifications" 
-                   {% if notification_settings.email_notifications %}checked{% endif %}
-                   class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded">
+
+            <!-- Quick Actions -->
+            <div class="bg-white dark:bg-gray-800 shadow rounded-lg p-6">
+                <h2 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Quick Actions</h2>
+                <nav class="space-y-2">
+                    <a href="{% url 'users:password_change' %}" 
+                       class="flex items-center px-3 py-2 text-sm text-gray-600 dark:text-gray-400 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700">
+                        <i data-lucide="key" class="h-5 w-5 mr-3"></i>
+                        Change Password
+                    </a>
+                    <a href="{% url 'users:export_data' %}" 
+                       class="flex items-center px-3 py-2 text-sm text-gray-600 dark:text-gray-400 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700">
+                        <i data-lucide="download" class="h-5 w-5 mr-3"></i>
+                        Export Data
+                    </a>
+                    <a href="#" class="flex items-center px-3 py-2 text-sm text-red-600 rounded-md hover:bg-red-50" 
+                       data-toggle="modal" data-target="#deleteAccountModal">
+                        <i data-lucide="trash-2" class="h-5 w-5 mr-3"></i>
+                        Delete Account
+                    </a>
+                </nav>
+            </div>
         </div>
 
-        <!-- Daily Reminders -->
-        <div class="flex items-center justify-between">
-            <div>
-                <label class="text-sm font-medium text-gray-700 dark:text-gray-300">
-                    Daily Reminders
-                </label>
-                <p class="text-sm text-gray-500">Get daily reminders to complete your habits</p>
-            </div>
-            <input type="checkbox" 
-                   name="daily_reminders" 
-                   {% if notification_settings.daily_reminders %}checked{% endif %}
-                   class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded">
-        </div>
+        <!-- Profile Form -->
+        <div class="md:col-span-2">
+            <form method="post" enctype="multipart/form-data" id="profile-form" class="bg-white dark:bg-gray-800 shadow rounded-lg divide-y divide-gray-200 dark:divide-gray-700">
+                {% csrf_token %}
 
-        <!-- Weekly Summary -->
-        <div class="flex items-center justify-between">
-            <div>
-                <label class="text-sm font-medium text-gray-700 dark:text-gray-300">
-                    Weekly Summary
-                </label>
-                <p class="text-sm text-gray-500">Receive weekly progress reports</p>
-            </div>
-            <input type="checkbox" 
-                   name="weekly_report" 
-                   {% if user.profile.weekly_report %}checked{% endif %}
-                   class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded">
+                <!-- Personal Information -->
+                <div class="p-6">
+                    <h2 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Personal Information</h2>
+                    <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
+                        {{ form.avatar }}
+                        {{ form.first_name|as_crispy_field }}
+                        {{ form.last_name|as_crispy_field }}
+                        {{ form.email|as_crispy_field }}
+                        <div class="sm:col-span-2">
+                            {{ form.bio|as_crispy_field }}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Preferences -->
+                <div class="p-6">
+                    <h2 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Preferences</h2>
+                    <div class="grid grid-cols-1 gap-6">
+                        {{ form.timezone|as_crispy_field }}
+                        {{ form.theme|as_crispy_field }}
+                    </div>
+                </div>
+
+                <!-- Notification Settings -->
+                <div class="p-6">
+                    <h2 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Notification Settings</h2>
+                    <div class="space-y-4">
+                        <!-- Email Notifications -->
+                        <div class="flex items-start">
+                            <div class="flex items-center h-5">
+                                {{ form.email_notifications }}
+                            </div>
+                            <div class="ml-3">
+                                <label for="{{ form.email_notifications.id_for_label }}" class="text-sm font-medium text-gray-900 dark:text-white">
+                                    Email Notifications
+                                </label>
+                                <p class="text-sm text-gray-500">Receive important updates via email</p>
+                            </div>
+                        </div>
+
+                        <!-- Daily Reminders -->
+                        <div class="flex items-start">
+                            <div class="flex items-center h-5">
+                                {{ form.daily_reminders }}
+                            </div>
+                            <div class="ml-3">
+                                <label for="{{ form.daily_reminders.id_for_label }}" class="text-sm font-medium text-gray-900 dark:text-white">
+                                    Daily Reminders
+                                </label>
+                                <p class="text-sm text-gray-500">Get reminded of your daily habits</p>
+                            </div>
+                        </div>
+
+                        <!-- Daily Reminder Time -->
+                        <div id="reminder-time-section" class="ml-8">
+                            {{ form.daily_reminder_time|as_crispy_field }}
+                        </div>
+
+                        <!-- Weekly Report -->
+                        <div class="flex items-start">
+                            <div class="flex items-center h-5">
+                                {{ form.weekly_report }}
+                            </div>
+                            <div class="ml-3">
+                                <label for="{{ form.weekly_report.id_for_label }}" class="text-sm font-medium text-gray-900 dark:text-white">
+                                    Weekly Report
+                                </label>
+                                <p class="text-sm text-gray-500">Receive weekly progress summaries</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Form Actions -->
+                <div class="px-6 py-4 bg-gray-50 dark:bg-gray-700 text-right">
+                    <button type="submit" id="submit-button" 
+                            class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                        Save Changes
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
 </div>
-               <!-- Save Button -->
-               <div class="px-6 py-3 bg-gray-50 dark:bg-gray-700 text-right rounded-b-lg">
-                   <button type="submit" 
-                           class="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                       Save Changes
-                   </button>
-               </div>
-           </form>
-       </div>
-   </div>
-</div>
+
+{% endblock %}
 
 {% block extra_js %}
 <script>
-   document.addEventListener('DOMContentLoaded', function() {
-       const avatarInput = document.querySelector('input[type="file"]');
-       const profilePicture = document.querySelector('img[alt="{{ user.profile.display_name }}"]');
+document.addEventListener('DOMContentLoaded', function() {
+    // Avatar preview
+    const avatarInput = document.getElementById('id_avatar');
+    const previewAvatar = document.getElementById('preview-avatar');
+    const profileForm = document.getElementById('profile-form');
+    const submitButton = document.getElementById('submit-button');
+    const dailyReminders = document.getElementById('{{ form.daily_reminders.id_for_label }}');
+    const reminderTimeSection = document.getElementById('reminder-time-section');
+    const reminderTimeInput = document.getElementById('{{ form.daily_reminder_time.id_for_label }}');
 
-       avatarInput.addEventListener('change', function(e) {
-           if (e.target.files && e.target.files[0]) {
-               const reader = new FileReader();
-               reader.onload = function(e) {
-                   profilePicture.src = e.target.result;
-               };
-               reader.readAsDataURL(e.target.files[0]);
-           }
-       });
-   });
+    // Handle avatar preview
+    if (avatarInput) {
+        avatarInput.addEventListener('change', function(e) {
+            if (e.target.files && e.target.files[0]) {
+                const file = e.target.files[0];
+                if (!file.type.startsWith('image/')) {
+                    alert('Please select an image file');
+                    return;
+                }
+                if (file.size > 5 * 1024 * 1024) {
+                    alert('File size must be less than 5MB');
+                    return;
+                }
+
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    previewAvatar.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+    }
+
+    // Handle reminder time visibility
+    function toggleReminderTime() {
+        if (dailyReminders.checked) {
+            reminderTimeSection.style.display = 'block';
+            if (!reminderTimeInput.value) {
+                reminderTimeInput.value = '09:00';
+            }
+        } else {
+            reminderTimeSection.style.display = 'none';
+            reminderTimeInput.value = '';
+        }
+    }
+
+    if (dailyReminders && reminderTimeSection) {
+        dailyReminders.addEventListener('change', toggleReminderTime);
+        toggleReminderTime(); // Initial state
+    }
+
+    // Form submission
+    if (profileForm) {
+        profileForm.addEventListener('submit', function(e) {
+            submitButton.disabled = true;
+            submitButton.innerHTML = `
+                <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+                </svg>
+                Saving...
+            `;
+        });
+    }
+
+    // Initialize Lucide icons
+    if (typeof lucide !== 'undefined') {
+        lucide.createIcons();
+    }
+});
 </script>
-{% endblock %}
 {% endblock %}

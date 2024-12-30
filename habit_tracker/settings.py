@@ -1,15 +1,16 @@
 import os
 from pathlib import Path
-from dotenv import load_dotenv
 from datetime import timedelta
-
+import redis; 
+from dotenv import load_dotenv
 # Load environment variables
 load_dotenv()
 # Build paths inside the project
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.getenv('SECRET_KEY')
+
+""" SECRET_KEY = os.getenv('SECRET_KEY') """
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv('DEBUG', 'False') == 'True'
@@ -49,6 +50,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'allauth.account.middleware.AccountMiddleware',
+
 ]
 
 
@@ -72,8 +74,6 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'habit_tracker.wsgi.application'
-ASGI_APPLICATION = 'habit_tracker.asgi.application'
 
 # Database
 DATABASES = {
@@ -101,7 +101,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 # Internationalization
 LANGUAGE_CODE = 'en-us'
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Europe/Helsinki'
 USE_I18N = True
 USE_L10N = True
 USE_TZ = True
@@ -149,7 +149,39 @@ CHANNEL_LAYERS = {
     },
 }
 
-# Celery Configuration
+# Redis and Celery settings
+REDIS_HOST = os.getenv('REDIS_HOST', 'localhost')
+REDIS_PORT = os.getenv('REDIS_PORT', '6379')
+
+CELERY_BROKER_URL = f'redis://{REDIS_HOST}:{REDIS_PORT}/0'
+CELERY_RESULT_BACKEND = f'redis://{REDIS_HOST}:{REDIS_PORT}/0'
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_BROKER_CONNECTION_RETRY_ON_STARTUP = True
+
+
+""" # Add broker startup setting to avoid warning
+CELERY_BROKER_CONNECTION_RETRY_ON_STARTUP = True
+# Redis settings
+REDIS_HOST = os.getenv('REDIS_HOST', 'localhost')
+REDIS_PORT = os.getenv('REDIS_PORT', '6379')
+CELERY_BROKER_URL = f'redis://{REDIS_HOST}:{REDIS_PORT}/0'
+CELERY_RESULT_BACKEND = f'redis://{REDIS_HOST}:{REDIS_PORT}/0'
+ """
+
+# Redis specific settings
+CACHES = {
+    'default': {
+        'BACKEND': 'django_redis.cache.RedisCache',
+        'LOCATION': 'redis://127.0.0.1:6379/1',
+        'OPTIONS': {
+            'CLIENT_CLASS': 'django_redis.client.DefaultClient',
+        }
+    }
+}
+
+""" # Celery Configuration
 # Redis settings
 REDIS_HOST = os.getenv('REDIS_HOST', 'localhost')
 REDIS_PORT = os.getenv('REDIS_PORT', '6379')
@@ -160,7 +192,7 @@ CELERY_RESULT_BACKEND = os.getenv('CELERY_RESULT_BACKEND', f'redis://{REDIS_HOST
 CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
-CELERY_TIMEZONE = TIME_ZONE
+CELERY_TIMEZONE = TIME_ZONE """
 CELERY_BEAT_SCHEDULE = {
     'check-streak-breaks': {
         'task': 'habits.tasks.check_streak_breaks',
@@ -180,6 +212,28 @@ EMAIL_PORT = os.getenv('EMAIL_PORT')
 EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
 EMAIL_USE_TLS = True
-# Email settings (for development)
-if DEBUG:
-    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+
+""" # Database settings
+DATABASE="postgres"
+DB_ENGINE="django.db.backends.postgresql"
+DB_NAME="habit_tracker"
+DB_USER="habit_user"
+DB_PASSWORD="habit_password"
+DB_HOST="db"
+DB_PORT=5432 """
+
+# Email settings
+EMAIL_BACKEND="django.core.mail.backends.smtp.EmailBackend"
+EMAIL_HOST="smtp.gmail.com"
+EMAIL_PORT=587
+
+
+# Redis settings
+REDIS_URL="redis://redis:6379/0"
+
+r = redis.Redis(host='localhost', port=6379, db=0)
+# Celery settings
+
+
+

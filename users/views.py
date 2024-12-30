@@ -16,19 +16,8 @@ from django.utils import timezone
 from habits.models import Habit, HabitCompletion
 import io
 import pytz
-from django.shortcuts import get_object_or_404
 
 
-class RegisterView(CreateView):
-    """Handle user registration"""
-    form_class = UserCreationForm
-    template_name = 'registration/register.html'
-    success_url = reverse_lazy('login')
-
-    def form_valid(self, form):
-        response = super().form_valid(form)
-        messages.success(self.request, 'Account created successfully! Please log in.')
-        return response
 
 class ProfileView(LoginRequiredMixin, UpdateView):
     template_name = 'users/profile.html'
@@ -41,10 +30,65 @@ class ProfileView(LoginRequiredMixin, UpdateView):
             defaults={
                 'timezone': 'UTC',
                 'theme': 'system',
-                'notification_preferences': {}
+                'notification_preferences': {
+                    'email_notifications': True,
+                    'daily_reminders': False,
+                    'weekly_summary': True
+                }
             }
         )
         return profile
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # Add notification settings to context
+        context['notification_settings'] = self.object.get_notification_settings()
+        
+        # Add user stats
+        context.update({
+            'active_habits': self.request.user.habits.count(),
+            'completed_today': self.request.user.habits.filter(
+                completions__completed_at__date=timezone.now().date()
+            ).distinct().count(),
+            'longest_streak': max(
+                (habit.get_streak() for habit in self.request.user.habits.all()),
+                default=0
+            )
+        })
+        
+        return context
+
+    def form_valid(self, form):
+        # Save the user's basic info
+        user = self.request.user
+        user.first_name = form.cleaned_data.get('first_name', '')
+        user.last_name = form.cleaned_data.get('last_name', '')
+        user.email = form.cleaned_data.get('email', '')
+        user.save()
+
+        # Handle notification preferences
+        notification_settings = {
+            'email_notifications': form.cleaned_data.get('email_notifications', False),
+            'daily_reminders': form.cleaned_data.get('daily_reminders', False),
+            'weekly_summary': form.cleaned_data.get('weekly_report', False)
+        }
+
+        # Update profile instance
+        profile = form.instance
+        profile.user = user
+        profile.notification_preferences = notification_settings
+        
+        # Handle daily reminder time
+        if not notification_settings['daily_reminders']:
+            profile.daily_reminder_time = None
+
+        response = super().form_valid(form)
+        messages.success(self.request, 'Profile updated successfully!')
+        return response
+
+    def form_invalid(self, form):
+        messages.error(self.request, 'Please correct the errors below.')
+        return super().form_invalid(form)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -157,6 +201,7 @@ class DeleteAccountView(LoginRequiredMixin, TemplateView):
         return redirect('home')
 
 class RegisterView(CreateView):
+    """Handle user registration"""
     form_class = UserCreationForm
     template_name = 'registration/register.html'
     success_url = reverse_lazy('login')
@@ -170,3 +215,16 @@ def get_unread_notifications(self):
 
 def mark_notifications_read(self):
     self.user.notifications.filter(is_read=False).update(is_read=True)
+
+class CustomPasswordChangeView(LoginRequiredMixin, PasswordChangeView):
+    template_name = 'users/password_change.html'
+    success_url = reverse_lazy('users:profile')
+    form_class = PasswordChangeForm
+
+    def form_valid(self, form):
+        messages.success(self.request, 'Your password has been changed successfully!')
+        return super().form_valid(form)
+
+    def form_invalid(self, form):
+        messages.error(self.request, 'Please correct the errors below.')
+        return super().form_invalid(form)

@@ -174,9 +174,105 @@
         </div>
     </div>
 </div>
+<!-- Add Time Range Filter -->
+<div class="mb-6">
+    <select id="timeRange" class="form-select rounded-md">
+        <option value="7">Last 7 days</option>
+        <option value="30" selected>Last 30 days</option>
+        <option value="90">Last 3 months</option>
+        <option value="365">Last year</option>
+    </select>
+</div>
+
+<!-- Add Performance Metrics Cards -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-4">
+        <div class="flex items-center">
+            <div class="ml-3">
+                <h3 class="text-lg font-semibold">Consistency Score</h3>
+                <p class="text-3xl font-bold text-indigo-600">{{ consistency_score }}%</p>
+                {% if consistency_trend > 0 %}
+                    <span class="text-green-500">↑ {{ consistency_trend }}%</span>
+                {% else %}
+                    <span class="text-red-500">↓ {{ consistency_trend }}%</span>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    <!-- Add similar cards for other metrics -->
+</div>
+
+<!-- Add Achievement Milestones -->
+<div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6 mb-6">
+    <h3 class="text-xl font-semibold mb-4">Achievement Milestones</h3>
+    <div class="space-y-4">
+        {% for milestone in achievement_milestones %}
+        <div class="flex items-center">
+            <div class="relative">
+                <div class="h-8 w-8 rounded-full bg-indigo-100 flex items-center justify-center">
+                    <span class="text-indigo-600">{{ milestone.icon }}</span>
+                </div>
+            </div>
+            <div class="ml-4">
+                <h4 class="text-lg font-medium">{{ milestone.title }}</h4>
+                <p class="text-sm text-gray-500">{{ milestone.description }}</p>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
 {% endblock %}
 
 {% block extra_js %}
+<script>
+    // Time range selector handler
+    document.getElementById('timeRange').addEventListener('change', function(e) {
+        updateAnalytics(e.target.value);
+    });
+    
+    async function updateAnalytics(timeRange) {
+        try {
+            const response = await fetch(`/api/habits/analytics/?days=${timeRange}`);
+            const data = await response.json();
+            updateCharts(data);
+            updateMetrics(data);
+        } catch (error) {
+            console.error('Error updating analytics:', error);
+        }
+    }
+    
+    function updateCharts(data) {
+        // Update existing charts with new data
+        completionTrendsChart.data.labels = data.completion_data.labels;
+        completionTrendsChart.data.datasets[0].data = data.completion_data.values;
+        completionTrendsChart.update();
+        
+        successRateChart.data.labels = data.day_success_data.labels;
+        successRateChart.data.datasets[0].data = data.day_success_data.values;
+        successRateChart.update();
+    }
+    
+    // Add chart animations and interactions
+    const chartOptions = {
+        animation: {
+            duration: 1000,
+            easing: 'easeInOutQuart'
+        },
+        interactions: {
+            intersect: false,
+            mode: 'index'
+        },
+        plugins: {
+            tooltip: {
+                callbacks: {
+                    label: function(context) {
+                        return `${context.dataset.label}: ${context.parsed.y}%`;
+                    }
+                }
+            }
+        }
+    };
+    </script>
 <script>
     // Prepare chart data
     const completionData = {{ completion_data|safe }};

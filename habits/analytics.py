@@ -254,3 +254,68 @@ def get_habit_recommendations(user) -> List[Dict[str, str]]:
     ]
     
     return recommendations[:3]  # Return top 3 recommendations
+def get_habit_trends(self, months: int = 3) -> Dict[str, Any]:
+    """Analyze long-term habit trends"""
+    end_date = timezone.now()
+    start_date = end_date - timedelta(days=months * 30)
+    
+    monthly_data = defaultdict(int)
+    completions = self.habit.completions.filter(
+        completed_at__range=(start_date, end_date)
+    )
+    
+    for completion in completions:
+        month_key = completion.completed_at.strftime('%Y-%m')
+        monthly_data[month_key] += 1
+        
+    return {
+        'labels': sorted(monthly_data.keys()),
+        'values': [monthly_data[k] for k in sorted(monthly_data.keys())],
+        'trend': calculate_trend(list(monthly_data.values()))
+    }
+def get_relative_performance(self, comparison_group: str = 'all') -> Dict[str, Any]:
+    """Compare habit performance against relevant benchmarks"""
+    user_habits = self.habit.user.habits.all()
+    
+    if comparison_group == 'similar':
+        comparison_habits = user_habits.filter(periodicity=self.habit.periodicity)
+    else:
+        comparison_habits = user_habits
+        
+    avg_completion_rate = mean([h.get_completion_rate() for h in comparison_habits])
+    avg_streak = mean([h.get_streak() for h in comparison_habits])
+    
+    return {
+        'completion_rate_percentile': calculate_percentile(
+            self.habit.get_completion_rate(), 
+            [h.get_completion_rate() for h in comparison_habits]
+        ),
+        'streak_percentile': calculate_percentile(
+            self.habit.get_streak(),
+            [h.get_streak() for h in comparison_habits]
+        ),
+        'relative_performance': {
+            'completion_rate': self.habit.get_completion_rate() - avg_completion_rate,
+            'streak': self.habit.get_streak() - avg_streak
+        }
+    }
+def export_analytics_data(self, format: str = 'json') -> Any:
+    """Export analytics data in various formats"""
+    data = {
+        'habit_name': self.habit.name,
+        'summary_stats': self.get_summary_stats(),
+        'trends': self.get_habit_trends(),
+        'performance_metrics': self.get_performance_metrics()
+    }
+    
+    if format == 'csv':
+        return convert_to_csv(data)
+    return data
+def get_performance_metrics(self) -> Dict[str, Any]:
+    """Calculate advanced performance metrics"""
+    return {
+        'consistency_score': self.calculate_consistency_score(),
+        'improvement_rate': self.calculate_improvement_rate(),
+        'best_performing_days': self.get_best_performing_days(),
+        'achievement_milestones': self.get_achievement_milestones()
+    }

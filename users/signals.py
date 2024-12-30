@@ -9,13 +9,13 @@ User = get_user_model()
 def create_or_update_user_profile(sender, instance, created, **kwargs):
     """Create or update UserProfile when User is saved"""
     if created:
-        UserProfile.objects.get_or_create(
+        UserProfile.objects.create(
             user=instance,
-            defaults={
-                'notification_preferences': {
-                    'email_notifications': True,
-                    'daily_reminders': True,
-                    'weekly_summary': True
-                }
+            notification_preferences={
+                'email_notifications': True,
+                'daily_reminders': True,
+                'weekly_summary': True
             }
         )
+    else:
+        UserProfile.objects.get_or_create(user=instance)
