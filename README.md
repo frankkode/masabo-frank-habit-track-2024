@@ -26,26 +26,63 @@ A comprehensive Django-based habit tracking application that helps users build a
 ```
 habit-track-2024/
 ├── habitapp/
-│   ├── habits/                  # Main app directory
-│   │   ├── migrations/          # Database migrations
-│   │   ├── templatetags/        # Custom template tags
-│   │   ├── templates/habits/    # Habit-specific templates
-│   │   ├── tests/              # Test files
-│   │   ├── admin.py            # Admin configuration
-│   │   ├── analytics.py        # Analytics logic
-│   │   ├── api.py              # API endpoints
-│   │   ├── forms.py            # Form definitions
-│   │   ├── models.py           # Database models
-│   │   ├── streak_utils.py     # Streak calculation utilities
-│   │   ├── tasks.py            # Celery tasks
-│   │   ├── urls.py             # URL routing
-│   │   └── views.py            # View logic
-│   ├── static/                 # Static files
-│   │   ├── css/               # Stylesheet files
-│   │   ├── js/                # JavaScript files
-│   │   └── images/            # Image assets
-│   ├── templates/             # Base templates
-│   └── habitapp/              # Project configuration
+│   ├── habits/
+│   │   ├── migrations/
+│   │   ├── templatetags/
+│   │   │   ├── __init__.py
+│   │   │   └── habit_tags.py
+│   │   ├── templates/
+│   │   │   └── habits/
+│   │   │       ├── analytics.html
+│   │   │       ├── dashboard.html
+│   │   │       ├── habit_confirm_delete.html
+│   │   │       ├── habit_detail.html
+│   │   │       ├── habit_form.html
+│   │   │       ├── habit_form_update.html
+│   │   │       └── notifications.html
+│   │   ├── tests/
+│   │   │   ├── __init__.py
+│   │   │   ├── test_models.py
+│   │   │   ├── test_tasks.py
+│   │   │   └── test_views.py
+│   │   ├── __init__.py
+│   │   ├── admin.py
+│   │   ├── analytics.py
+│   │   ├── api.py
+│   │   ├── apps.py
+│   │   ├── forms.py
+│   │   ├── models.py
+│   │   ├── streak_utils.py
+│   │   ├── tasks.py
+│   │   ├── urls.py
+│   │   └── views.py
+│   ├── static/
+│   │   ├── css/
+│   │   │   └── styles.css
+│   │   ├── js/
+│   │   │   └── charts.js
+│   │   └── images/
+│   ├── templates/
+│   │   ├── base.html
+│   │   ├── registration/
+│   │   │   ├── login.html
+│   │   │   └── signup.html
+│   │   └── includes/
+│   │       ├── header.html
+│   │       └── footer.html
+│   ├── habitapp/
+│   │   ├── __init__.py
+│   │   ├── asgi.py
+│   │   ├── celery.py
+│   │   ├── settings.py
+│   │   ├── urls.py
+│   │   └── wsgi.py
+│   ├── manage.py
+│   ├── requirements.txt
+│   └── README.md
+├── .env
+├── .gitignore
+└── docker-compose.yml
 ```
 
 ## Installation
