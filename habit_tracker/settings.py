@@ -1,20 +1,13 @@
 import os
 from pathlib import Path
-from datetime import timedelta
-import redis; 
 from dotenv import load_dotenv
-# Load environment variables
+
 load_dotenv()
-# Build paths inside the project
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# SECURITY WARNING: keep the secret key used in production secret!
-
-""" SECRET_KEY = os.getenv('SECRET_KEY') """
-
-# SECURITY WARNING: don't run with debug turned on in production!
+SECRET_KEY = os.getenv('SECRET_KEY')
 DEBUG = os.getenv('DEBUG', 'False') == 'True'
-
 ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',')
 
 # Application definition
@@ -29,6 +22,7 @@ INSTALLED_APPS = [
     
     # Third party apps
     'allauth',
+    'rest_framework',
     'allauth.account',
     'allauth.socialaccount',
     'crispy_forms',
@@ -99,9 +93,20 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+# Database
+""" DATABASES = {
+   'default': {
+       'ENGINE': os.getenv('DB_ENGINE', 'django.db.backends.sqlite3'),
+       'NAME': os.getenv('DB_NAME', BASE_DIR / 'db.sqlite3'),
+       'USER': os.getenv('DB_USER'),
+       'PASSWORD': os.getenv('DB_PASSWORD'), 
+       'HOST': os.getenv('DB_HOST'),
+       'PORT': os.getenv('DB_PORT')
+   }
+} """
 # Internationalization
 LANGUAGE_CODE = 'en-us'
-TIME_ZONE = 'Europe/Helsinki'
+TIME_ZONE = 'UTC'
 USE_I18N = True
 USE_L10N = True
 USE_TZ = True
@@ -149,91 +154,60 @@ CHANNEL_LAYERS = {
     },
 }
 
+
+
 # Redis and Celery settings
-REDIS_HOST = os.getenv('REDIS_HOST', 'localhost')
-REDIS_PORT = os.getenv('REDIS_PORT', '6379')
-
-CELERY_BROKER_URL = f'redis://{REDIS_HOST}:{REDIS_PORT}/0'
-CELERY_RESULT_BACKEND = f'redis://{REDIS_HOST}:{REDIS_PORT}/0'
-CELERY_ACCEPT_CONTENT = ['json']
-CELERY_TASK_SERIALIZER = 'json'
-CELERY_RESULT_SERIALIZER = 'json'
-CELERY_BROKER_CONNECTION_RETRY_ON_STARTUP = True
 
 
-""" # Add broker startup setting to avoid warning
-CELERY_BROKER_CONNECTION_RETRY_ON_STARTUP = True
-# Redis settings
-REDIS_HOST = os.getenv('REDIS_HOST', 'localhost')
-REDIS_PORT = os.getenv('REDIS_PORT', '6379')
-CELERY_BROKER_URL = f'redis://{REDIS_HOST}:{REDIS_PORT}/0'
-CELERY_RESULT_BACKEND = f'redis://{REDIS_HOST}:{REDIS_PORT}/0'
- """
 
-# Redis specific settings
-CACHES = {
-    'default': {
-        'BACKEND': 'django_redis.cache.RedisCache',
-        'LOCATION': 'redis://127.0.0.1:6379/1',
-        'OPTIONS': {
-            'CLIENT_CLASS': 'django_redis.client.DefaultClient',
-        }
-    }
-}
-
-""" # Celery Configuration
-# Redis settings
-REDIS_HOST = os.getenv('REDIS_HOST', 'localhost')
-REDIS_PORT = os.getenv('REDIS_PORT', '6379')
-
-# Celery settings
-CELERY_BROKER_URL = os.getenv('CELERY_BROKER_URL', f'redis://{REDIS_HOST}:{REDIS_PORT}/0')
-CELERY_RESULT_BACKEND = os.getenv('CELERY_RESULT_BACKEND', f'redis://{REDIS_HOST}:{REDIS_PORT}/0')
-CELERY_ACCEPT_CONTENT = ['json']
-CELERY_TASK_SERIALIZER = 'json'
-CELERY_RESULT_SERIALIZER = 'json'
-CELERY_TIMEZONE = TIME_ZONE """
-CELERY_BEAT_SCHEDULE = {
-    'check-streak-breaks': {
-        'task': 'habits.tasks.check_streak_breaks',
-        'schedule': timedelta(hours=24),  # Run daily
-    },
-}
 # CORS Configuration
 CORS_ALLOW_ALL_ORIGINS = DEBUG
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:8000",
     "http://127.0.0.1:8000",
 ]
-# Email settings
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+# Email
+EMAIL_BACKEND = os.getenv('EMAIL_BACKEND')
 EMAIL_HOST = os.getenv('EMAIL_HOST')
 EMAIL_PORT = os.getenv('EMAIL_PORT')
 EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
-EMAIL_USE_TLS = True
+EMAIL_USE_TLS = os.getenv('EMAIL_USE_TLS') == 'True'
 
+# Redis/Celery
+REDIS_HOST = os.getenv('REDIS_HOST', 'redis')
+REDIS_PORT = os.getenv('REDIS_PORT', 6379)
 
-""" # Database settings
-DATABASE="postgres"
-DB_ENGINE="django.db.backends.postgresql"
-DB_NAME="habit_tracker"
-DB_USER="habit_user"
-DB_PASSWORD="habit_password"
-DB_HOST="db"
-DB_PORT=5432 """
+CELERY_BROKER_URL = os.getenv('CELERY_BROKER_URL', f'redis://{REDIS_HOST}:{REDIS_PORT}/0')
+CELERY_RESULT_BACKEND = os.getenv('CELERY_RESULT_BACKEND', f'redis://{REDIS_HOST}:{REDIS_PORT}/0')
+CELERY_BROKER_CONNECTION_RETRY = True
+CELERY_BROKER_CONNECTION_RETRY_ON_STARTUP = True
+CELERY_BROKER_CONNECTION_MAX_RETRIES = 10
 
-# Email settings
-EMAIL_BACKEND="django.core.mail.backends.smtp.EmailBackend"
-EMAIL_HOST="smtp.gmail.com"
-EMAIL_PORT=587
+# Additional Celery Settings
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_TIMEZONE = 'UTC'
 
+CHANNEL_LAYERS = {
+   'default': {
+       'BACKEND': 'channels_redis.core.RedisChannelLayer',
+       'CONFIG': {
+           "hosts": [(REDIS_HOST, REDIS_PORT)],
+       },
+   },
+}
 
-# Redis settings
-REDIS_URL="redis://redis:6379/0"
-
-r = redis.Redis(host='localhost', port=6379, db=0)
-# Celery settings
+CACHES = {
+   'default': {
+       'BACKEND': 'django_redis.cache.RedisCache',
+       'LOCATION': f'redis://{REDIS_HOST}:{REDIS_PORT}/1',
+       'OPTIONS': {
+           'CLIENT_CLASS': 'django_redis.client.DefaultClient',
+       }
+   }
+}
 
 
 

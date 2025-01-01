@@ -1,74 +1,78 @@
-
 from celery import shared_task
 from django.core.mail import send_mail
 from django.conf import settings
 from django.utils import timezone
 from datetime import timedelta
-from .models import Habit, Notification
+from .models import Habit, Notification, HabitCompletion
 
 @shared_task
 def send_notification_email(notification_id, user_email, subject):
-    """Send notification email to user"""
+    """Send email notification to user"""
     try:
         notification = Notification.objects.get(id=notification_id)
-        send_mail(
-            subject,
-            notification.message,
-            settings.DEFAULT_FROM_EMAIL,
-            [user_email],
+        result = send_mail(
+            subject=subject,
+            message=notification.message,
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            recipient_list=[user_email],
             fail_silently=False
         )
-        return True
-    except Exception as e:
-        print(f"Error sending email: {e}")
+        return bool(result)
+    except Notification.DoesNotExist:
         return False
 
 @shared_task
 def analyze_habits():
-    """Analyze habits and create notifications for struggling habits"""
-    notifications_created = 0
+    """Analyze habits and generate insights"""
+    analyzed = False
+    habits = Habit.objects.filter(
+        completions__completed_at__gte=timezone.now() - timezone.timedelta(days=7)
+    ).distinct()
     
-    for habit in Habit.objects.all():
-        try:
-            # Check completion rate
-            completion_rate = habit.get_completion_rate()
-            
-            if completion_rate < 50:
-                # Create notification for struggling habits
-                Notification.objects.create(
-                    user=habit.user,
-                    habit=habit,
-                    type='reminder',
-                    message=f'Your completion rate for {habit.name} is low ({completion_rate}%). Need help getting back on track?'
-                )
-                notifications_created += 1
+    for habit in habits:
+        streak = habit.get_streak()
+        completion_rate = habit.get_completion_percentage()
+        
+        if streak >= 7 and completion_rate >= 80:
+            Notification.objects.create(
+                user=habit.user,
+                habit=habit,
+                message=f"Great job maintaining {habit.name}! You're on a {streak} day streak!"
+            )
+            analyzed = True
+    return analyzed
 
-            # Check for broken streaks
-            if habit.get_streak() == 0:
-                last_completion = habit.completions.order_by('-completed_at').first()
-                if last_completion:
-                    days_since = (timezone.now() - last_completion.completed_at).days
-                    expected_interval = 1 if habit.periodicity == 'daily' else 7
-                    
-                    if days_since > expected_interval:
-                        Notification.objects.create(
-                            user=habit.user,
-                            habit=habit,
-                            type='break',
-                            message=f'Your streak for {habit.name} was broken. Time to start again!'
-                        )
-                        notifications_created += 1
+@shared_task
+def send_habit_reminder():
+    today = timezone.now().date()
+    incomplete_habits = Habit.objects.filter(
+        periodicity='daily'
+    ).exclude(
+        completions__completed_at__date=today
+    )
 
-        except Exception as e:
-            print(f"Error analyzing habit {habit.id}: {e}")
-            continue
-
-    return notifications_created
-
-# Add to celery beat schedule in settings.py
-CELERY_BEAT_SCHEDULE = {
-    'analyze-habits': {
-        'task': 'habits.tasks.analyze_habits',
-        'schedule': timedelta(days=1),
-    },
-}
+    for habit in incomplete_habits:
+        send_mail(
+            subject='Daily Habit Reminder',
+            message=f"Don't forget to complete your habit: {habit.name}",
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            recipient_list=[habit.user.email],
+            fail_silently=False
+        )
+    return len(incomplete_habits)
+@shared_task
+def process_habit_completion(completion_id):
+    """Process habit completion and create notifications"""
+    try:
+        completion = HabitCompletion.objects.get(id=completion_id)
+        habit = completion.habit
+        streak = habit.get_streak()
+        
+        if streak in [7, 30, 100]:
+            Notification.objects.create(
+                user=habit.user,
+                habit=habit,
+                message=f'Congratulations! You achieved a {streak}-day streak on {habit.name}!'
+            )
+    except HabitCompletion.DoesNotExist:
+        pass

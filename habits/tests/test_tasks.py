@@ -1,66 +1,74 @@
-from django.test import TestCase
+# habits/tests/test_tasks.py
+import pytest
+from django.utils import timezone
+from datetime import timedelta
+from unittest.mock import patch
 from django.contrib.auth import get_user_model
-from habits.models import Habit, Notification
-from habits.tasks import send_notification_email, analyze_habits
-from unittest.mock import patch, Mock
+from habits.models import Habit, HabitCompletion, Notification
+from habits.tasks import analyze_habits, send_notification_email
+from django.conf import settings
 
 User = get_user_model()
 
-
-class TestTasks(TestCase):
-    def setUp(self):
-        self.user = User.objects.create_user(
+@pytest.mark.django_db
+class TestTasks:
+    @pytest.fixture
+    def user(self):
+        return User.objects.create_user(
             username='testuser',
             email='test@example.com',
             password='testpass123'
         )
-        self.habit = Habit.objects.create(
-            user=self.user,
+
+    @pytest.fixture
+    def habit(self, user):
+        return Habit.objects.create(
+            user=user,
             name='Test Habit',
-            periodicity='daily'
+            periodicity='daily',
+            target_completions=1
         )
-        self.notification = Notification.objects.create(
-            user=self.user,
-            habit=self.habit,
+
+    @pytest.fixture
+    def notification(self, user, habit):
+        return Notification.objects.create(
+            user=user,
+            habit=habit,
             message='Test notification',
             type='reminder'
         )
 
-    @patch('habits.tasks.send_mail')
-    def test_send_notification_email(self, mock_send_mail):
-        # Set up
-        subject = "Test Subject"
-        message = "Test Message"
+    @pytest.fixture
+    def habit_with_completions(self, habit):
+        for i in range(7):
+            HabitCompletion.objects.create(
+                habit=habit,
+                completed_at=timezone.now() - timedelta(days=i)
+            )
+        return habit
+
+    @patch('habits.tasks.send_mail')  # Change patch path
+    def test_send_notification_email(self, mock_send_mail, notification, user):
+        mock_send_mail.return_value = 1
         
-        # Call the task
-        send_notification_email(
-            self.notification.id,
-            self.user.email,
-            subject
+        result = send_notification_email(
+            notification.id,
+            user.email,
+            "Test Subject"
         )
 
-        # Assert the email was sent with correct parameters
         mock_send_mail.assert_called_once_with(
-            subject,
-            self.notification.message,
-            'frankmasabo55@gmail.com',  # Update this to match your settings.DEFAULT_FROM_EMAIL
-            [self.user.email],
+            subject="Test Subject",
+            message=notification.message,
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            recipient_list=[user.email],
             fail_silently=False
         )
+        assert result is True
 
-    @patch('habits.tasks.Notification.objects.create')
-    def test_analyze_habits(self, mock_create_notification):
-        # Call the task
-        analyze_habits()
-
-        # If habit is struggling (completion rate < 50%), a notification should be created
-        mock_create_notification.assert_called()
-
-        # Get the call arguments
-        call_args = mock_create_notification.call_args[1]
+    def test_analyze_habits(self, habit_with_completions):
+        notifications_before = Notification.objects.count()
+        result = analyze_habits()
         
-        # Assert notification was created with correct parameters
-        self.assertEqual(call_args['user'], self.user)
-        self.assertEqual(call_args['habit'], self.habit)
-        self.assertEqual(call_args['type'], 'reminder')
-        self.assertIn('completion rate', call_args['message'].lower())
+        assert Notification.objects.count() > notifications_before
+        assert result > 0

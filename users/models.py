@@ -91,7 +91,13 @@ class Notification(models.Model):
    created_at = models.DateTimeField(auto_now_add=True)
    notification_type = models.CharField(max_length=50, blank=True)
    reference_id = models.IntegerField(null=True, blank=True)
+   def get_streak(self):
+        calculator = StreakCalculator(self)
+        return calculator.calculate_current_streak()
 
+   def get_streak_details(self):
+        calculator = StreakCalculator(self)
+        return calculator.get_streak_details()
    class Meta:
        ordering = ['-created_at']
 

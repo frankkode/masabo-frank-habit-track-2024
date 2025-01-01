@@ -1,4 +1,4 @@
-from django.urls import path
+from django.urls import path, include
 from . import views
 
 app_name = 'habits'
@@ -27,5 +27,6 @@ urlpatterns = [
          name='bulk-complete'),
     path('tracker/', views.HabitTrackerView.as_view(), name='habit_tracker'),
     path('habit/<int:habit_id>/manual-complete/', views.manual_complete_habit, name='manual_complete_habit'),
+    path('api/', include('habits.api_urls')),
     
 ]

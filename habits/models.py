@@ -36,7 +36,8 @@ class Habit(models.Model):
 
     def save(self, *args, **kwargs):
         if not self.pk:  # Only on creation
-            self.target_completions = 1 if self.periodicity == 'daily' else 7
+            # Set target completions based on periodicity
+            self.target_completions = 30 if self.periodicity == 'daily' else 4
         super().save(*args, **kwargs)
 
     def clean(self):
@@ -46,81 +47,173 @@ class Habit(models.Model):
         if len(self.color) != 7:
             raise ValidationError('Color must be in #RRGGBB format')
 
-    # Progress and Completion Methods
-    def get_progress(self):
-        """Calculate progress percentage based on periodicity."""
-        if self.periodicity == 'weekly':
-            today = timezone.now().date()
-            week_start = today - timedelta(days=today.weekday())
-            weekly_completions = self.completions.filter(
-                completed_at__date__gte=week_start
-            ).count()
-            return min((weekly_completions / 4) * 100, 100)
-        return self.get_completion_percentage()
+    def get_progress_text(self):
+        """Get formatted progress text"""
+        completions = self.completions.count()
+        target = self.target_completions
+        return f"{completions}/{target}"
 
     def get_completion_percentage(self):
         """Calculate completion percentage based on target"""
-        completed = self.completions.count()
-        if self.target_completions == 0:
-            return 0
-        percentage = (completed / self.target_completions) * 100
-        return min(round(percentage), 100)
+        completions_count = self.completions.count()
+        if self.target_completions > 0:
+            percentage = (completions_count / self.target_completions) * 100
+            return min(round(percentage), 100)
+        return 0
 
-    def get_completion_status(self):
-        """Check if habit is completed for current period."""
+    def is_completed(self):
+        """Check if habit has reached its target completions"""
+        return self.completions.count() >= self.target_completions
+    def get_next_due_date(self):
+        """Calculate next due date based on periodicity"""
+        last_completion = self.completions.order_by('-completed_at').first()
         now = timezone.now()
-        latest_completion = self.completions.order_by('-completed_at').first()
         
-        if not latest_completion:
-            return False
+        if not last_completion:
+            return now
             
+        last_date = last_completion.completed_at
+        
         if self.periodicity == 'daily':
-            return latest_completion.completed_at.date() == now.date()
+            next_due = last_date + timedelta(days=1)
+        else:  # weekly
+            next_due = last_date + timedelta(weeks=1)
             
-        week_start = now - timedelta(days=now.weekday())
-        return latest_completion.completed_at.date() >= week_start.date()
+        # If next due date is in the past, return current time
+        return next_due if next_due > now else now
 
-    def get_completion_rate(self, days=30):
-        """Calculate completion rate for given period."""
-        end_date = timezone.now()
-        start_date = end_date - timedelta(days=days)
-        completions = self.completions.filter(
-            completed_at__range=(start_date, end_date)
-        ).count()
-        
-        expected = days if self.periodicity == 'daily' else days // 7
-        return (completions / expected * 100) if expected > 0 else 0
-
+    def get_completion_percentage(self):
+        """Calculate completion percentage"""
+        total = self.completions.count()
+        if total == 0:
+            return 0
+        return round((total / self.target_completions) * 100, 1)
     # Streak Methods
     def get_streak(self):
-        """Calculate current streak."""
+        """Calculate current streak taking periodicity into account"""
         completions = self.completions.order_by('-completed_at')
         if not completions.exists():
             return 0
-            
-        current_streak = 1
-        last_completion = completions.first()
-        last_date = last_completion.completed_at.date()
+        
+        today = timezone.now().date()
+        last_completion = completions.first().completed_at.date()
+        
+        # Check if streak is broken
+        if self.periodicity == 'daily':
+            if (today - last_completion).days > 1:
+                return 0
+        else:  # weekly
+            if (today - last_completion).days > 7:
+                return 0
+        
+        # Calculate streak
+        streak = 1
+        prev_date = last_completion
         
         for completion in completions[1:]:
-            completion_date = completion.completed_at.date()
-            expected_date = (
-                last_date - timedelta(days=1)
-                if self.periodicity == 'daily'
-                else last_date - timedelta(weeks=1)
-            )
+            current_date = completion.completed_at.date()
+            expected_gap = 1 if self.periodicity == 'daily' else 7
             
-            if completion_date == expected_date:
-                current_streak += 1
-                last_date = completion_date
+            if (prev_date - current_date).days == expected_gap:
+                streak += 1
+                prev_date = current_date
             else:
                 break
-                
-        return current_streak
+        
+        return streak
+
+    # Alias for backward compatibility
+    def get_current_streak(self):
+        """Alias for get_streak()"""
+        return self.get_streak()
+    
+    
+    def get_longest_streak(self):
+        """Calculate longest streak ever achieved"""
+        completions = list(self.completions.order_by('completed_at'))
+        if not completions:
+            return 0
+
+        longest_streak = current_streak = 1
+        expected_gap = 1 if self.periodicity == 'daily' else 7
+
+        for i in range(1, len(completions)):
+            current_date = completions[i].completed_at.date()
+            prev_date = completions[i-1].completed_at.date()
+            
+            if (current_date - prev_date).days == expected_gap:
+                current_streak += 1
+                longest_streak = max(longest_streak, current_streak)
+            else:
+                current_streak = 1
+
+        return longest_streak
+    def get_last_completion(self):
+        """Get the most recent completion date"""
+        last_completion = self.completions.order_by('-completed_at').first()
+        if last_completion:
+            return last_completion.completed_at.isoformat()
+        return None
+
+    def get_completion_status(self):
+        """Check if habit is completed for current period"""
+        last_completion = self.get_last_completion()
+        if not last_completion:
+            return False
+            
+        now = timezone.now()
+        completion_date = timezone.datetime.fromisoformat(last_completion)
+        
+        if self.periodicity == 'daily':
+            return completion_date.date() == now.date()
+        else:  # weekly
+            week_start = now - timedelta(days=now.weekday())
+            return completion_date.date() >= week_start.date()
+
+    def get_completion_rate(self, days=30):
+        """Calculate completion rate for the specified period"""
+        end_date = timezone.now().date()
+        start_date = end_date - timedelta(days=days)
+        
+        completions = self.completions.filter(
+            completed_at__date__range=[start_date, end_date]
+        ).count()
+        
+        if self.periodicity == 'daily':
+            expected = days  # One completion per day
+        else:
+            expected = days // 7  # One completion per week
+            
+        if expected == 0:
+            return 0.0
+        
+        rate = (completions / expected) * 100
+        return round(min(rate, 100), 1)
+
+    def get_stats(self):
+        """Get habit statistics including historical data."""
+        total_completions = self.completions.count()
+        cycles_completed = total_completions // self.target_completions
+        return {
+            'total_completions': total_completions,
+            'cycles_completed': cycles_completed,
+            'current_cycle': self.get_completion_percentage(),
+            'current_streak': self.get_current_streak()
+        }
+
+    def complete_habit(self):
+        """Complete habit and handle milestone/streak notifications."""
+        completion = HabitCompletion.objects.create(
+            habit=self,
+            completed_at=timezone.now()
+        )
+        
+        self.handle_streak_completion()
+        return completion
 
     def handle_streak_completion(self):
         """Handle streak achievements and create notifications."""
-        current_streak = self.get_streak()
+        current_streak = self.get_current_streak()
         milestones = [7, 30, 60, 90, 180, 365]
         
         for milestone in milestones:
@@ -134,77 +227,6 @@ class Habit(models.Model):
                 return True
         return False
 
-    def break_streak(self):
-        """Handle streak break notifications."""
-        if self.get_streak() > 7:
-            Notification.objects.create(
-                user=self.user,
-                habit=self,
-                type='break',
-                message=f'Oh no! You broke your streak for {self.name}. Keep going!'
-            )
-
-    # Completion Methods
-    def complete_habit(self):
-        """Complete habit and handle streak logic."""
-        completion = HabitCompletion.objects.create(
-            habit=self,
-            completed_at=timezone.now()
-        )
-        self.handle_streak_completion()
-        return completion
-
-    def get_next_due_date(self):
-        """Calculate next due date based on periodicity."""
-        last_completion = self.completions.order_by('-completed_at').first()
-        if not last_completion:
-            return timezone.now()
-            
-        if self.periodicity == 'daily':
-            return last_completion.completed_at + timedelta(days=1)
-        return last_completion.completed_at + timedelta(weeks=1)
-
-    def is_completed(self):
-        """Check if habit has reached target completions."""
-        return self.completions.count() >= self.target_completions
-    def get_completion_percentage(self):
-        completions_count = self.completions.count()
-        if self.target_completions > 0:
-            return int((completions_count / self.target_completions) * 100)
-        else:
-            return 0
-
-    def get_stats(self):
-        """Get habit statistics including historical data."""
-        total_completions = self.completions.count()
-        cycles_completed = total_completions // self.target_completions
-        return {
-            'total_completions': total_completions,
-            'cycles_completed': cycles_completed,
-            'current_cycle': self.get_completion_percentage(),
-            'current_streak': self.get_streak()
-        }
-
-    def complete_habit(self):
-        """Complete habit and handle reset logic."""
-        completion = HabitCompletion.objects.create(
-            habit=self,
-            completed_at=timezone.now()
-        )
-        
-        # Check if target reached for notifications
-        if (self.completions.count() % self.target_completions) == 0:
-            Notification.objects.create(
-                user=self.user,
-                habit=self,
-                type='milestone',
-                message=f"Congratulations! You've completed another cycle of {self.name}!"
-            )
-            
-        self.handle_streak_completion()
-        return completion
-
-
 class HabitCompletion(models.Model):
     """Model for tracking individual habit completions."""
     
@@ -215,10 +237,10 @@ class HabitCompletion(models.Model):
 
     class Meta:
         ordering = ['-completed_at']
+        get_latest_by = 'completed_at'
 
     def __str__(self):
         return f"{self.habit.name} completed at {self.completed_at}"
-
 
 class Notification(models.Model):
     """Model for tracking user notifications."""
@@ -242,10 +264,10 @@ class Notification(models.Model):
 
     def __str__(self):
         return f"{self.get_type_display()} for {self.habit.name}"
+
     def mark_as_read(self):
         self.read = True
         self.save()
-
 
 @receiver(post_save, sender=User)
 def create_default_habits(sender, instance, created, **kwargs):
@@ -274,5 +296,3 @@ def create_default_habits(sender, instance, created, **kwargs):
         
         for habit_data in default_habits:
             Habit.objects.create(user=instance, **habit_data)
-            
-        

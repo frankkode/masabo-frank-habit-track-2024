@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load habit_tags %}
 
 {% block title %}Dashboard - Activity Tracker{% endblock %}
 
@@ -25,8 +26,9 @@
                     <span class="bg-white dark:bg-gray-800 dark:text-white font-semibold">{{ total_completions }}</span>
                 </div>
                 <div class="bg-white dark:bg-gray-800 dark:text-white flex justify-between">
+                   
                     <span>Longest Streak</span>
-                    <span class="bg-white dark:bg-gray-800 dark:text-white font-semibold">{{ longest_streak }} days</span>
+                    <span class="bg-white dark:bg-gray-800 dark:text-white font-semibold"> {{ longest_streak }} days </span>
                 </div>
             </div>
         </div>
@@ -51,7 +53,7 @@
             </div>
             <div class="bg-white dark:bg-gray-800 dark:text-white flex items-center space-x-4">
                 <span class="bg-white dark:bg-gray-800 dark:text-white text-sm {% if habit.get_completion_status %}text-green-600{% else %}text-orange-500{% endif %}">
-                    Streak: {{ habit.get_streak }}
+                    Streak: {{ habit.completions.count }}
                 </span>
                 <label class="bg-white dark:bg-gray-800 dark:text-white inline-flex relative items-center cursor-pointer">
                     <input type="checkbox" value="" class="bg-white dark:bg-gray-800 dark:text-white sr-only peer" {% if habit.get_completion_status %}checked disabled{% endif %} onchange="completeHabit({{ habit.id }})">
@@ -85,7 +87,7 @@
             </div>
             <div class="bg-white dark:bg-gray-800 dark:text-white flex items-center space-x-4">
                 <span class="bg-white dark:bg-gray-800 dark:text-white text-sm {% if habit.get_completion_status %}text-green-600{% else %}text-orange-500{% endif %}">
-                    Streak: {{ habit.get_streak }}
+                    Streak: {{ habit.completions.count }}
                 </span>
                 <label class="bg-white dark:bg-gray-800 dark:text-white inline-flex relative items-center cursor-pointer">
                     <input type="checkbox" value="" class="bg-white dark:bg-gray-800 dark:text-white sr-only peer" {% if habit.get_completion_status %}checked disabled{% endif %} onchange="completeHabit({{ habit.id }})">
@@ -168,7 +170,6 @@
                 <div class="bg-white dark:bg-gray-800 dark:text-white progress-bar" 
                      style="width: {{ habit.get_completion_percentage }}%">
                 </div>
-                <span class="dark:bg-gray-800 dark:text-white progress-text">{{ habit.get_progress_text }}</span>
             </div>
             <div class=" dark:bg-gray-800 dark:text-white flex justify-between items-center mt-4">
                 <span class="dark:bg-gray-800 dark:text-white text-sm text-gray-600">
@@ -244,7 +245,7 @@
     </div>
 </div>
 <style>
-    .progress-bar{background-color: rgb(59, 245, 118);}
+    .progress-bar{background-color:#30e7ff;}
 </style>
 <script>
 function openManualEntry() {

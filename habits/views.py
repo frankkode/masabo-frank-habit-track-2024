@@ -9,12 +9,15 @@ from django.utils import timezone
 from django.db.models import Count, Q
 from django.contrib import messages
 from .models import Habit, HabitCompletion, Notification
+from .analytics import HabitAnalytics  
 from django.views.generic import TemplateView
 import json
 from celery import shared_task
 from django.core.mail import send_mail
 from .forms import HabitForm, HabitCompletionForm
-from datetime import timedelta
+from .tasks import send_notification_email  # Import the function from tasks
+from .streak_utils import StreakCalculator  # Import StreakCalculator
+from datetime import datetime, timedelta
 
 
 
@@ -41,11 +44,14 @@ class DashboardView(LoginRequiredMixin, TemplateView):
             for habit in user_habits
         )
         
-        # Calculate longest streak
-        longest_streak = max(
-            (habit.get_streak() for habit in user_habits),
-            default=0
-        )
+        # Calculate streaks for each habit
+        streaks = []
+        for habit in user_habits:
+            current_streak = habit.get_streak()  # Using get_streak instead
+            streaks.append(current_streak)
+        
+        # Get longest streak
+        longest_streak = max(streaks, default=0)
 
         context.update({
             'total_habits': user_habits.count(),
@@ -69,10 +75,11 @@ class DashboardView(LoginRequiredMixin, TemplateView):
         if not habits.exists():
             return 0
         
-        return max(
-            (habit.get_streak() for habit in habits),
-            default=0
-        )
+        streaks = []
+        for habit in habits:
+            streaks.append(habit.get_current_streak())
+        return max(streaks, default=0)
+
     def get_statistics(self):
         """Calculate dashboard statistics"""
         today = timezone.now()
@@ -86,7 +93,7 @@ class DashboardView(LoginRequiredMixin, TemplateView):
         
         total_completions = completions.count()
         current_streaks = {
-            habit.id: habit.get_streak() 
+            habit.id: habit.get_current_streak()  # Using get_current_streak
             for habit in habits
         }
         
@@ -104,7 +111,7 @@ class DashboardView(LoginRequiredMixin, TemplateView):
             return 0
             
         total_required = sum(
-            30 if habit.periodicity == 'daily' else 4
+            30 if habit.periodicity == 'daily' else 4  # 30 for daily, 4 for weekly
             for habit in habits
         )
         
@@ -236,20 +243,11 @@ class HabitCompletionView(LoginRequiredMixin, View):
             completion.habit = habit
             completion.save()
             
-            # Check for streak achievements
-            streak = habit.get_streak()
-            if streak in [7, 30, 100]:
-                Notification.objects.create(
-                    user=request.user,
-                    habit=habit,
-                    type='streak',
-                    message=f'Congratulations! {streak}-day streak on {habit.name}!'
-                )
+           
             
             return JsonResponse({
                 'status': 'success',
                 'message': 'Habit completed successfully!',
-                'streak': streak
             })
         
         return JsonResponse({
@@ -324,7 +322,6 @@ class BulkHabitCompletionView(LoginRequiredMixin, View):
                 'status': 'error',
                 'message': str(e)
             }, status=400)
-
 class HabitAnalyticsView(LoginRequiredMixin, View):
     def get(self, request, habit_id):
         habit = get_object_or_404(Habit, id=habit_id, user=request.user)
@@ -397,23 +394,35 @@ class AnalyticsView(LoginRequiredMixin, TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         habits = self.request.user.habits.all()
-
-        # Calculate overall statistics
+         # Calculate total completions
+        total_completions = sum(
+            habit.completions.count() 
+            for habit in habits
+        )
+        # Calculate streak data for each habit
+        streak_data = {}
+        longest_overall_streak = 0
+        for habit in habits:
+            habit.current_streak = habit.get_streak()
+        
+        for habit in habits:
+            calculator = StreakCalculator(habit)
+            streak_details = calculator.get_streak_details()
+            streak_data[habit.id] = streak_details
+            longest_overall_streak = max(longest_overall_streak, streak_details['longest_streak'])
+        
         context.update({
             'total_habits': habits.count(),
-            'total_completions': sum(h.completions.count() for h in habits),
-            'success_rate': self.calculate_overall_success_rate(habits),
-            'longest_streak': max((h.get_streak() for h in habits), default=0),
+            'longest_streak': longest_overall_streak,
+            'total_completions': total_completions,
+            'streak_data': streak_data,
             'habits': habits,
-        })
-
-        # Prepare chart data
-        context.update({
+            'success_rate': self.calculate_overall_success_rate(habits),
             'completion_data': self.get_completion_trend_data(habits),
             'day_success_data': self.get_day_success_data(habits),
         })
-
         return context
+    
 
     def calculate_overall_success_rate(self, habits):
         if not habits:
@@ -492,48 +501,91 @@ class AnalyticsView(LoginRequiredMixin, TemplateView):
             'struggling': [h for h in habit_stats if h['completion_rate'] < 50][:3]
         }
 class HabitCompletionView(LoginRequiredMixin, View):
+    """Handle habit completion with analytics and notifications"""
+    def get_response_data(self, habit):
+        """Get updated habit statistics"""
+        return {
+            'streak': habit.get_streak(),
+            'completion_rate': habit.get_completion_percentage(),
+            'total_completions': habit.completions.count(),
+            'next_due': habit.get_next_due_date().isoformat(),
+            'last_completion': habit.get_last_completion()
+        }
     def post(self, request, pk):
-        habit = get_object_or_404(Habit, pk=pk, user=request.user)
-        
-        # Create completion
-        completion = HabitCompletion.objects.create(
-            habit=habit,
-            completed_at=timezone.now()
-        )
-        
-        # Get updated streak
-        current_streak = habit.get_streak()
-        
-        return JsonResponse({
-            'status': 'success',
-            'message': 'Habit completed successfully!',
-            'streak': current_streak,
-            'next_due': habit.get_next_due_date()
-        })
+        try:
+            habit = self.get_habit(request, pk)
+            completion = self.create_completion(habit, request.POST)
+            self.check_streak_achievements(habit)
+            
+            return JsonResponse({
+                'status': 'success',
+                'data': self.get_response_data(habit),
+                'message': 'Habit completed successfully!'
+            })
+        except ValueError as e:
+            return JsonResponse({
+                'status': 'error',
+                'message': str(e)
+            }, status=400)
+
+    def get_habit(self, request, pk):
+        """Get habit object and verify ownership"""
+        return get_object_or_404(Habit, pk=pk, user=request.user)
+
+    def create_completion(self, habit, data):
+        """Create habit completion with optional note"""
+        form = HabitCompletionForm(data)
+        if not form.is_valid():
+            raise ValueError('Invalid completion data')
+            
+        completion = form.save(commit=False)
+        completion.habit = habit
+        completion.save()
+        return completion
+
+    def check_streak_achievements(self, habit):
+        """Check and create streak achievement notifications"""
+        streak = habit.get_streak()
+        if streak in [7, 30, 100]:
+            Notification.objects.create(
+                user=habit.user,
+                habit=habit,
+                type='streak',
+                message=f'Congratulations! {streak}-day streak on {habit.name}!'
+            )
+            
+            # Send email notification
+            send_notification_email.delay(
+                habit.user.email,
+                f"Achievement Unlocked: {streak}-Day Streak!",
+                f"Congratulations! You've maintained a {streak}-day streak on {habit.name}!"
+            )
+
+    def get_response_data(self, habit):
+        """Get updated habit statistics"""
+        return {
+            'streak': habit.get_streak(),
+            'completion_rate': habit.get_completion_percentage(),
+            'total_completions': habit.completions.count(),
+            'next_due': habit.get_next_due_date().isoformat(),
+            'last_completion': habit.get_last_completion()
+        }
 class HabitTrackerView(LoginRequiredMixin, TemplateView):
     template_name = 'habits/habit_tracker.html'
-def get_success_url(self):
-    return reverse_lazy('habits:dashboard')
+    def get_success_url(self):
+        return reverse_lazy('habits:dashboard')
 @login_required
 def manual_complete_habit(request, habit_id):
-    if request.method == 'POST':
-        data = json.loads(request.body)
-        habit = get_object_or_404(Habit, id=habit_id, user=request.user)
-        
-        completion_date = datetime.strptime(data['date'], '%Y-%m-%d').date()
-        HabitCompletion.objects.create(
-            habit=habit,
-            completed_at=completion_date
-        )
-        
-        return JsonResponse({'status': 'success'})
-    return JsonResponse({'status': 'error'})
-from habits.tasks import send_notification_email, analyze_habits
-def test_email(request):
-    send_notification_email.delay(
-        request.user.id,
-        "Test Email",
-        "This is a test email"
-    )
-    messages.success(request, "Test email sent!")
-    return redirect('habits:dashboard')
+        if request.method == 'POST':
+            data = json.loads(request.body)
+            habit = get_object_or_404(Habit, id=habit_id, user=request.user)
+            
+            completion_date = datetime.strptime(data['date'], '%Y-%m-%d').date()
+            HabitCompletion.objects.create(
+                habit=habit,
+                completed_at=completion_date
+            )
+            
+            return JsonResponse({'status': 'success'})
+        return JsonResponse({'status': 'error'})
+

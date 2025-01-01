@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 
 {% block title %}Analytics - Habit Tracker{% endblock %}
+{% load habit_tags %}
 
 {% block extra_head %}
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -9,73 +10,32 @@
 {% block content %}
 <div class="bg-white dark:bg-gray-800 dark:text-white max-w-7xl mx-auto">
     <!-- Page Header -->
-    <div class="bg-white dark:bg-gray-800 dark:text-white bg-white shadow overflow-hidden sm:rounded-lg mb-6">
-        <div class="bg-white dark:bg-gray-800 dark:text-white px-4 py-5 sm:p-6">
-            <h2 class="bg-white dark:bg-gray-800 dark:text-white text-2xl font-bold leading-7 text-gray-900 sm:text-3xl sm:truncate">
+    <div class="bg-white dark:bg-gray-800 shadow overflow-hidden sm:rounded-lg mb-6">
+        <div class="px-4 py-5 sm:p-6">
+            <h2 class="text-2xl font-bold leading-7 text-gray-900 dark:text-white sm:text-3xl sm:truncate">
                 Analytics Overview
             </h2>
-            <p class="bg-white dark:bg-gray-800 dark:text-white mt-1 max-w-2xl text-sm text-gray-500">
+            <p class="mt-1 max-w-2xl text-sm text-gray-500 dark:text-gray-300">
                 Track your progress and analyze your habit performance
             </p>
         </div>
     </div>
 
     <!-- Overall Stats -->
-    <div class="bg-white dark:bg-gray-800 dark:text-white grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4 mb-6">
+    <div class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4 mb-6">
         <!-- Total Habits -->
-        <div class="bg-white dark:bg-gray-800 dark:text-white bg-white overflow-hidden shadow rounded-lg">
-            <div class="bg-white dark:bg-gray-800 dark:text-white p-5">
-                <div class="bg-white dark:bg-gray-800 dark:text-white flex items-center">
-                    <div class="bg-white dark:bg-gray-800 dark:text-white flex-shrink-0">
-                        <svg class="bg-white dark:bg-gray-800 dark:text-white h-6 w-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                  d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+        <div class="bg-white dark:bg-gray-800 overflow-hidden shadow rounded-lg">
+            <div class="p-5">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <svg class="h-6 w-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
                         </svg>
                     </div>
-                    <div class="bg-white dark:bg-gray-800 dark:text-white ml-5 w-0 flex-1">
+                    <div class="ml-5 w-0 flex-1">
                         <dl>
-                            <dt class="bg-white dark:bg-gray-800 dark:text-white text-sm font-medium text-gray-500 truncate">Active Habits</dt>
-                            <dd class="bg-white dark:bg-gray-800 dark:text-white text-2xl font-semibold text-gray-900">{{ total_habits }}</dd>
-                        </dl>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Total Completions -->
-        <div class="bg-white dark:bg-gray-800 dark:text-white bg-white overflow-hidden shadow rounded-lg">
-            <div class="bg-white dark:bg-gray-800 dark:text-white p-5">
-                <div class="bg-white dark:bg-gray-800 dark:text-white flex items-center">
-                    <div class="bg-white dark:bg-gray-800 dark:text-white flex-shrink-0">
-                        <svg class="bg-white dark:bg-gray-800 dark:text-white h-6 w-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                  d="M5 13l4 4L19 7"/>
-                        </svg>
-                    </div>
-                    <div class="bg-white dark:bg-gray-800 dark:text-white ml-5 w-0 flex-1">
-                        <dl>
-                            <dt class="bg-white dark:bg-gray-800 dark:text-white text-sm font-medium text-gray-500 truncate">Total Completions</dt>
-                            <dd class="bg-white dark:bg-gray-800 dark:text-white text-2xl font-semibold text-gray-900">{{ total_completions }}</dd>
-                        </dl>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Average Success Rate -->
-        <div class="bg-white dark:bg-gray-800 dark:text-white bg-white overflow-hidden shadow rounded-lg">
-            <div class="bg-white dark:bg-gray-800 dark:text-white p-5">
-                <div class="bg-white dark:bg-gray-800 dark:text-white flex items-center">
-                    <div class="bg-white dark:bg-gray-800 dark:text-white flex-shrink-0">
-                        <svg class="bg-white dark:bg-gray-800 dark:text-white h-6 w-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                  d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/>
-                        </svg>
-                    </div>
-                    <div class="bg-white dark:bg-gray-800 dark:text-white ml-5 w-0 flex-1">
-                        <dl>
-                            <dt class="bg-white dark:bg-gray-800 dark:text-white text-sm font-medium text-gray-500 truncate">Success Rate</dt>
-                            <dd class="bg-white dark:bg-gray-800 dark:text-white text-2xl font-semibold text-gray-900">{{ success_rate }}%</dd>
+                            <dt class="text-sm font-medium text-gray-500 dark:text-gray-300">Active Habits</dt>
+                            <dd class="text-2xl font-semibold text-gray-900 dark:text-white" data-total-habits>{{ total_habits }}</dd>
                         </dl>
                     </div>
                 </div>
@@ -83,19 +43,56 @@
         </div>
 
         <!-- Longest Streak -->
-        <div class="bg-white dark:bg-gray-800 dark:text-white bg-white overflow-hidden shadow rounded-lg">
-            <div class="bg-white dark:bg-gray-800 dark:text-white p-5">
-                <div class="bg-white dark:bg-gray-800 dark:text-white flex items-center">
-                    <div class="bg-white dark:bg-gray-800 dark:text-white flex-shrink-0">
-                        <svg class="bg-white dark:bg-gray-800 dark:text-white h-6 w-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                  d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/>
+        <div class="bg-white dark:bg-gray-800 overflow-hidden shadow rounded-lg">
+            <div class="p-5">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <svg class="h-6 w-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/>
                         </svg>
                     </div>
-                    <div class="bg-white dark:bg-gray-800 dark:text-white ml-5 w-0 flex-1">
+                    <div class="ml-5 w-0 flex-1">
                         <dl>
-                            <dt class="bg-white dark:bg-gray-800 dark:text-white text-sm font-medium text-gray-500 truncate">Longest Streak</dt>
-                            <dd class="bg-white dark:bg-gray-800 dark:text-white text-2xl font-semibold text-gray-900">{{ longest_streak }} days</dd>
+                            <dt class="text-sm font-medium text-gray-500 dark:text-gray-300">Longest Streak</dt>
+                            <dd class="text-2xl font-semibold text-gray-900 dark:text-white" data-longest-streak>{{ longest_streak }} days</dd>
+                        </dl>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Total Completions -->
+        <div class="bg-white dark:bg-gray-800 overflow-hidden shadow rounded-lg">
+            <div class="p-5">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <svg class="h-6 w-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                        </svg>
+                    </div>
+                    <div class="ml-5 w-0 flex-1">
+                        <dl>
+                            <dt class="text-sm font-medium text-gray-500 dark:text-gray-300">Total Completions</dt>
+                            <dd class="text-2xl font-semibold text-gray-900 dark:text-white" data-total-completions>{{ total_completions }}</dd>
+                        </dl>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Success Rate -->
+        <div class="bg-white dark:bg-gray-800 overflow-hidden shadow rounded-lg">
+            <div class="p-5">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <svg class="h-6 w-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/>
+                        </svg>
+                    </div>
+                    <div class="ml-5 w-0 flex-1">
+                        <dl>
+                            <dt class="text-sm font-medium text-gray-500 dark:text-gray-300">Success Rate</dt>
+                            <dd class="text-2xl font-semibold text-gray-900 dark:text-white" data-success-rate>{{ success_rate }}%</dd>
                         </dl>
                     </div>
                 </div>
@@ -104,182 +101,90 @@
     </div>
 
     <!-- Charts Section -->
-<div class="bg-white dark:bg-gray-800 dark:text-white grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-    <!-- Completion Trends -->
-    <div class="bg-white dark:bg-gray-800 dark:text-white bg-white shadow rounded-lg p-6">
-        <h3 class="bg-white dark:bg-gray-800 dark:text-white text-lg font-medium text-gray-900 mb-4">Completion Trends</h3>
-        <div class="bg-white dark:bg-gray-800 dark:text-white h-64"> <!-- Fixed height container -->
-            <canvas id="completionTrends"></canvas>
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+        <!-- Completion Trends -->
+        <div class="bg-white dark:bg-gray-800 shadow rounded-lg p-6">
+            <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Completion Trends</h3>
+            <div class="h-64">
+                <canvas id="completionTrends"></canvas>
+            </div>
+        </div>
+
+        <!-- Success Rate by Day -->
+        <div class="bg-white dark:bg-gray-800 shadow rounded-lg p-6">
+            <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Success Rate by Day</h3>
+            <div class="h-64">
+                <canvas id="successRateByDay"></canvas>
+            </div>
         </div>
     </div>
 
-    <!-- Success Rate by Day -->
-    <div class="bg-white dark:bg-gray-800 dark:text-white bg-white shadow rounded-lg p-6">
-        <h3 class="bg-white dark:bg-gray-800 dark:text-white text-lg font-medium text-gray-900 mb-4">Success Rate by Day</h3>
-        <div class="bg-white dark:bg-gray-800 dark:text-white h-64"> <!-- Fixed height container -->
-            <canvas id="successRateByDay"></canvas>
-        </div>
-    </div>
-</div>
     <!-- Habit Performance Table -->
-    <div class="bg-white dark:bg-gray-800 dark:text-white bg-white shadow overflow-hidden sm:rounded-lg">
-        <div class="bg-white dark:bg-gray-800 dark:text-white px-4 py-5 sm:px-6">
-            <h3 class="bg-white dark:bg-gray-800 dark:text-white text-lg leading-6 font-medium text-gray-900">
+    <div class="bg-white dark:bg-gray-800 shadow overflow-hidden sm:rounded-lg">
+        <div class="px-4 py-5 sm:px-6">
+            <h3 class="text-lg leading-6 font-medium text-gray-900 dark:text-white">
                 Habit Performance
             </h3>
-            <p class="bg-white dark:bg-gray-800 dark:text-white mt-1 max-w-2xl text-sm text-gray-500">
+            <p class="mt-1 max-w-2xl text-sm text-gray-500 dark:text-gray-300">
                 Detailed breakdown of each habit's performance
             </p>
         </div>
-        <div class="bg-white dark:bg-gray-800 dark:text-white border-t border-gray-200">
-            <table class="bg-white dark:bg-gray-800 dark:text-white min-w-full divide-y divide-gray-200">
-                <thead class="bg-white dark:bg-gray-800 dark:text-white bg-gray-50">
+        <div class="border-t border-gray-200">
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50 dark:bg-gray-700">
                     <tr>
-                        <th scope="col" class="bg-white dark:bg-gray-800 dark:text-white px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                             Habit
                         </th>
-                        <th scope="col" class="bg-white dark:bg-gray-800 dark:text-white px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Streak
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                            Current Streak
                         </th>
-                        <th scope="col" class="bg-white dark:bg-gray-800 dark:text-white px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                            Longest Streak
+                        </th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                             Success Rate
-                        </th>
-                        <th scope="col" class="bg-white dark:bg-gray-800 dark:text-white px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Total Completions
                         </th>
                     </tr>
                 </thead>
-                <tbody class="bg-white dark:bg-gray-800 dark:text-white bg-white divide-y divide-gray-200">
+                <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200">
                     {% for habit in habits %}
-                    <tr>
-                        <td class="bg-white dark:bg-gray-800 dark:text-white px-6 py-4 whitespace-nowrap">
-                            <div class="bg-white dark:bg-gray-800 dark:text-white text-sm font-medium text-gray-900">{{ habit.name }}</div>
-                            <div class="bg-white dark:bg-gray-800 dark:text-white text-sm text-gray-500">{{ habit.get_periodicity_display }}</div>
+                    <tr data-habit-id="{{ habit.id }}">
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="text-sm font-medium text-gray-900 dark:text-white">{{ habit.name }}</div>
+                            <div class="text-sm text-gray-500 dark:text-gray-300">{{ habit.get_periodicity_display }}</div>
                         </td>
-                        <td class="bg-white dark:bg-gray-800 dark:text-white px-6 py-4 whitespace-nowrap">
-                            <span class="bg-white dark:bg-gray-800 dark:text-white px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                                {{ habit.get_streak }} days
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <span class="current-streak px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                                {{ habit.get_current_streak }}
                             </span>
                         </td>
-                        <td class="bg-white dark:bg-gray-800 dark:text-white px-6 py-4 whitespace-nowrap">
-                            <div class="bg-white dark:bg-gray-800 dark:text-white text-sm text-gray-900">{{ habit.get_completion_rate }}%</div>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <span class="longest-streak px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
+                                {{ habit.get_longest_streak }} 
+                            </span>
                         </td>
-                        <td class="bg-white dark:bg-gray-800 dark:text-white px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                            {{ habit.completions.count }}
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
+                            {{ habit.get_completion_rate|floatformat:1 }}%
                         </td>
                     </tr>
+                    
                     {% endfor %}
                 </tbody>
             </table>
         </div>
     </div>
 </div>
-<!-- Add Time Range Filter -->
-<div class="mb-6">
-    <select id="timeRange" class="form-select rounded-md">
-        <option value="7">Last 7 days</option>
-        <option value="30" selected>Last 30 days</option>
-        <option value="90">Last 3 months</option>
-        <option value="365">Last year</option>
-    </select>
-</div>
-
-<!-- Add Performance Metrics Cards -->
-<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-    <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-4">
-        <div class="flex items-center">
-            <div class="ml-3">
-                <h3 class="text-lg font-semibold">Consistency Score</h3>
-                <p class="text-3xl font-bold text-indigo-600">{{ consistency_score }}%</p>
-                {% if consistency_trend > 0 %}
-                    <span class="text-green-500">↑ {{ consistency_trend }}%</span>
-                {% else %}
-                    <span class="text-red-500">↓ {{ consistency_trend }}%</span>
-                {% endif %}
-            </div>
-        </div>
-    </div>
-    <!-- Add similar cards for other metrics -->
-</div>
-
-<!-- Add Achievement Milestones -->
-<div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6 mb-6">
-    <h3 class="text-xl font-semibold mb-4">Achievement Milestones</h3>
-    <div class="space-y-4">
-        {% for milestone in achievement_milestones %}
-        <div class="flex items-center">
-            <div class="relative">
-                <div class="h-8 w-8 rounded-full bg-indigo-100 flex items-center justify-center">
-                    <span class="text-indigo-600">{{ milestone.icon }}</span>
-                </div>
-            </div>
-            <div class="ml-4">
-                <h4 class="text-lg font-medium">{{ milestone.title }}</h4>
-                <p class="text-sm text-gray-500">{{ milestone.description }}</p>
-            </div>
-        </div>
-        {% endfor %}
-    </div>
-</div>
 {% endblock %}
 
 {% block extra_js %}
 <script>
-    // Time range selector handler
-    document.getElementById('timeRange').addEventListener('change', function(e) {
-        updateAnalytics(e.target.value);
-    });
-    
-    async function updateAnalytics(timeRange) {
-        try {
-            const response = await fetch(`/api/habits/analytics/?days=${timeRange}`);
-            const data = await response.json();
-            updateCharts(data);
-            updateMetrics(data);
-        } catch (error) {
-            console.error('Error updating analytics:', error);
-        }
-    }
-    
-    function updateCharts(data) {
-        // Update existing charts with new data
-        completionTrendsChart.data.labels = data.completion_data.labels;
-        completionTrendsChart.data.datasets[0].data = data.completion_data.values;
-        completionTrendsChart.update();
-        
-        successRateChart.data.labels = data.day_success_data.labels;
-        successRateChart.data.datasets[0].data = data.day_success_data.values;
-        successRateChart.update();
-    }
-    
-    // Add chart animations and interactions
-    const chartOptions = {
-        animation: {
-            duration: 1000,
-            easing: 'easeInOutQuart'
-        },
-        interactions: {
-            intersect: false,
-            mode: 'index'
-        },
-        plugins: {
-            tooltip: {
-                callbacks: {
-                    label: function(context) {
-                        return `${context.dataset.label}: ${context.parsed.y}%`;
-                    }
-                }
-            }
-        }
-    };
-    </script>
-<script>
-    // Prepare chart data
+    // Initialize charts with data from the server
     const completionData = {{ completion_data|safe }};
     const daySuccessData = {{ day_success_data|safe }};
 
     // Completion Trends Chart
-    new Chart(document.getElementById('completionTrends'), {
+    const completionTrendsChart = new Chart(document.getElementById('completionTrends'), {
         type: 'line',
         data: {
             labels: completionData.labels,
@@ -318,7 +223,7 @@
     });
 
     // Success Rate by Day Chart
-    new Chart(document.getElementById('successRateByDay'), {
+    const successRateChart = new Chart(document.getElementById('successRateByDay'), {
         type: 'bar',
         data: {
             labels: daySuccessData.labels,
@@ -350,16 +255,127 @@
             }
         }
     });
-    fetch(`/api/habits/${habitId}/analytics/`)
-    .then(response => response.json())
-    .then(data => {
-        // Access analytics data
-        const completionRate = data.analytics.completion_rate;
-        const currentStreak = data.analytics.current_streak;
-        const weeklyPatterns = data.analytics.weekly_patterns;
-        
-        // Update UI with analytics data
-        updateAnalyticsDisplay(data);
+
+    // Time range selector handler
+    document.getElementById('timeRange').addEventListener('change', function(e) {
+        updateAnalytics(e.target.value);
     });
+
+    // Function to update analytics data
+    async function updateAnalytics(timeRange) {
+        try {
+            const response = await fetch(`/api/habits/analytics/?days=${timeRange}`);
+            const data = await response.json();
+            
+            // Update charts
+            completionTrendsChart.data.labels = data.completion_data.labels;
+            completionTrendsChart.data.datasets[0].data = data.completion_data.values;
+            completionTrendsChart.update();
+            
+            successRateChart.data.labels = data.day_success_data.labels;
+            successRateChart.data.datasets[0].data = data.day_success_data.values;
+            successRateChart.update();
+            
+            // Update streak information
+            // Update streak information
+            document.querySelectorAll('[data-habit-id]').forEach(element => {
+                const habitId = element.dataset.habitId;
+                const streakInfo = data.streak_data[habitId];
+                if (streakInfo) {
+                    const currentStreakEl = element.querySelector('.current-streak');
+                    const longestStreakEl = element.querySelector('.longest-streak');
+                    
+                    if (currentStreakEl) {
+                        currentStreakEl.textContent = `${streakInfo.current_streak} days`;
+                        currentStreakEl.classList.toggle('bg-green-100', streakInfo.is_active);
+                        currentStreakEl.classList.toggle('bg-gray-100', !streakInfo.is_active);
+                    }
+                    
+                    if (longestStreakEl) {
+                        longestStreakEl.textContent = `${streakInfo.longest_streak} days`;
+                    }
+                }
+            });
+
+            // Update summary statistics
+            document.querySelector('[data-total-completions]').textContent = data.total_completions;
+            document.querySelector('[data-success-rate]').textContent = `${data.success_rate}%`;
+            document.querySelector('[data-longest-streak]').textContent = `${data.longest_streak} days`;
+            
+        } catch (error) {
+            console.error('Error updating analytics:', error);
+        }
+    }
+
+    // Chart animation options
+    const chartOptions = {
+        animation: {
+            duration: 1000,
+            easing: 'easeInOutQuart'
+        },
+        interactions: {
+            intersect: false,
+            mode: 'index'
+        },
+        plugins: {
+            tooltip: {
+                callbacks: {
+                    label: function(context) {
+                        return `${context.dataset.label}: ${context.parsed.y}%`;
+                    }
+                }
+            }
+        }
+    };
+
+    // Function to handle dark mode changes
+    function updateChartsTheme(isDarkMode) {
+        const textColor = isDarkMode ? '#fff' : '#374151';
+        const gridColor = isDarkMode ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)';
+
+        const chartConfig = {
+            scales: {
+                x: {
+                    grid: {
+                        color: gridColor
+                    },
+                    ticks: {
+                        color: textColor
+                    }
+                },
+                y: {
+                    grid: {
+                        color: gridColor
+                    },
+                    ticks: {
+                        color: textColor
+                    }
+                }
+            },
+            plugins: {
+                legend: {
+                    labels: {
+                        color: textColor
+                    }
+                }
+            }
+        };
+
+        completionTrendsChart.options = { ...completionTrendsChart.options, ...chartConfig };
+        successRateChart.options = { ...successRateChart.options, ...chartConfig };
+        
+        completionTrendsChart.update();
+        successRateChart.update();
+    }
+
+    // Listen for dark mode changes if you have a dark mode toggle
+    if (window.matchMedia) {
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
+            updateChartsTheme(e.matches);
+        });
+        
+        // Initial theme setup
+        updateChartsTheme(window.matchMedia('(prefers-color-scheme: dark)').matches);
+    }
 </script>
 {% endblock %}

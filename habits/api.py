@@ -1,28 +1,25 @@
-
-from rest_framework import viewsets
+from rest_framework import viewsets, permissions
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from django.utils import timezone
-from .models import Habit
-from .serializers import HabitSerializer
+from django.shortcuts import get_object_or_404
+from .models import Habit, HabitCompletion
+from .serializers import HabitSerializer, HabitCompletionSerializer
 
 class HabitViewSet(viewsets.ModelViewSet):
+    permission_classes = [permissions.IsAuthenticated]
     serializer_class = HabitSerializer
-    
+
     def get_queryset(self):
         return Habit.objects.filter(user=self.request.user)
-    
+
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
-    
+
     @action(detail=True, methods=['post'])
     def complete(self, request, pk=None):
         habit = self.get_object()
-        habit.completions.create(completed_at=timezone.now())
-        return Response({
-            'status': 'success',
-            'streak': habit.get_streak(),
-            'completion_rate': habit.get_completion_rate()
-        })
-        
-        
+        completion = HabitCompletion.objects.create(
+            habit=habit,
+            completed_at=timezone.now()
+        )
+        return Response({'status': 'completed'})
