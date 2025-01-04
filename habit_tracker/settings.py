@@ -83,16 +83,23 @@ TEMPLATES = [
     },
 ]
 
-# Database configuration
-DATABASE_URL = os.getenv('DATABASE_URL')
-
 DATABASES = {
-    'default': dj_database_url.config(
-        default=DATABASE_URL,
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': os.environ.get('DB_NAME', ''),
+        'USER': os.environ.get('DB_USER', ''),
+        'PASSWORD': os.environ.get('DB_PASSWORD', ''),
+        'HOST': os.environ.get('DB_HOST', ''),
+        'PORT': os.environ.get('DB_PORT', '5432'),
+    }
+}
+
+# If using DATABASE_URL, this will override the above configuration
+if os.environ.get('DATABASE_URL'):
+    DATABASES['default'] = dj_database_url.config(
         conn_max_age=600,
         conn_health_checks=True,
     )
-}
     
 """ # Database
 DATABASES = {
