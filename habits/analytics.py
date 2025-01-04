@@ -1,57 +1,54 @@
-from datetime import timedelta, timezone
-
+from django.utils import timezone
+from datetime import timedelta
 
 class HabitAnalytics:
     def __init__(self, habit):
         self.habit = habit
 
-    def get_completion_rate(self) -> float:
-        """Calculate completion rate for the last 30 days"""
-        thirty_days_ago = timezone.now() - timedelta(days=30)
+    def get_completion_rate(self):
+        days = 30
         completions = self.habit.completions.filter(
-            completed_at__gte=thirty_days_ago
+            completed_at__gte=timezone.now() - timedelta(days=days)
         ).count()
-        
-        expected = 30 if self.habit.periodicity == 'daily' else 4
-        return round((completions / expected * 100), 1) if expected > 0 else 0
+        return (completions / days) * 100
 
-    def get_streak(self) -> int:
-        """Calculate current streak"""
-        completions = self.habit.completions.order_by('-completed_at')
-        if not completions.exists():
-            return 0
-
-        streak = 1
-        prev_date = completions.first().completed_at.date()
-        today = timezone.now().date()
-
-        if prev_date != today and prev_date != today - timedelta(days=1):
-            return 0
-
-        for completion in completions[1:]:
-            current_date = completion.completed_at.date()
-            if (prev_date - current_date).days == 1:
-                streak += 1
-                prev_date = current_date
-            else:
-                break
-
-        return streak
-
-    def get_progress_data(self, days=30):
-        """Get completion data for the last X days"""
+    def get_progress_data(self, days=14):
         end_date = timezone.now().date()
-        start_date = end_date - timedelta(days=days)
-        
-        completions = set(
+        start_date = end_date - timedelta(days=days-1)
+        completed_dates = set(
             self.habit.completions.filter(
                 completed_at__date__gte=start_date,
                 completed_at__date__lte=end_date
             ).values_list('completed_at__date', flat=True)
         )
         
-        return [{
-            'date': start_date + timedelta(days=i),
-            'completed': (start_date + timedelta(days=i)) in completions,
-            'weekday': (start_date + timedelta(days=i)).strftime('%A')
-        } for i in range(days)]
+        return [
+            {'date': start_date + timedelta(days=i), 
+             'completed': (start_date + timedelta(days=i)) in completed_dates}
+            for i in range(days)
+        ]
+
+    def get_longest_streak(self):
+        dates = sorted(self.habit.completions.values_list('completed_at__date', flat=True))
+        if not dates:
+            return 0
+            
+        max_streak = current_streak = 1
+        for i in range(1, len(dates)):
+            if dates[i] - dates[i-1] == timedelta(days=1):
+                current_streak += 1
+                max_streak = max(max_streak, current_streak)
+            else:
+                current_streak = 1
+        return max_streak
+
+    def get_weekly_patterns(self):
+        patterns = {i: 0 for i in range(7)}
+        completions = self.habit.completions.all()
+        total_weeks = 4
+
+        for completion in completions:
+            day = completion.completed_at.weekday()
+            patterns[day] += (100 / total_weeks)
+
+        return patterns

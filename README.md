@@ -82,7 +82,6 @@ habit-track-2024/
 │   └── README.md
 ├── .env
 ├── .gitignore
-└── docker-compose.yml
 ```
 
 ## Installation

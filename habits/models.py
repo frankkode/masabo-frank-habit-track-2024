@@ -54,13 +54,11 @@ class Habit(models.Model):
         return f"{completions}/{target}"
 
     def get_completion_percentage(self):
-        """Calculate completion percentage based on target"""
-        completions_count = self.completions.count()
-        if self.target_completions > 0:
-            percentage = (completions_count / self.target_completions) * 100
-            return min(round(percentage), 100)
-        return 0
-
+        today = timezone.now().date()
+        daily_completions = self.completions.filter(
+            completed_at__date=today,
+        ).count()
+        return 100 if daily_completions >= self.target_completions else 0
     def is_completed(self):
         """Check if habit has reached its target completions"""
         return self.completions.count() >= self.target_completions
@@ -83,11 +81,12 @@ class Habit(models.Model):
         return next_due if next_due > now else now
 
     def get_completion_percentage(self):
-        """Calculate completion percentage"""
-        total = self.completions.count()
-        if total == 0:
-            return 0
-        return round((total / self.target_completions) * 100, 1)
+        """Calculate completion percentage for today"""
+        today = timezone.now().date()
+        daily_completions = self.completions.filter(
+            completed_at__date=today
+        ).count()
+        return 100 if daily_completions > 0 else 0
     # Streak Methods
     def get_streak(self):
         """Calculate current streak taking periodicity into account"""

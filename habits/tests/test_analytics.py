@@ -108,3 +108,13 @@ class TestHabitAnalytics:
                assert rate > 30  # More realistic threshold
           else:  # Weekend
                assert rate < 20
+def get_weekly_patterns(self):
+    patterns = {i: 0 for i in range(7)}  # 0-6 for Monday-Sunday
+    completions = self.habit.completions.all()
+    total_weeks = 4  # Based on test period
+
+    for completion in completions:
+        day = completion.completed_at.weekday()
+        patterns[day] += (100 / total_weeks)  # Convert to percentage
+
+    return patterns

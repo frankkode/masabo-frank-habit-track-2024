@@ -1,6 +1,11 @@
 from django.contrib import admin
 from .models import Habit, HabitCompletion, Notification
 
+
+# Customize admin site
+admin.site.site_header = 'Habit Tracking Administration'
+admin.site.site_title = 'Habit Tracker Admin Portal'
+admin.site.index_title = 'Welcome to Habit Tracker Admin'
 @admin.register(Habit)
 class HabitAdmin(admin.ModelAdmin):
     list_display = ['name', 'user', 'periodicity', 'created_at', 'get_current_streak', 'get_completion_percentage']

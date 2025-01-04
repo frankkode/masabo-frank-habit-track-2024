@@ -36,7 +36,8 @@ class DashboardView(LoginRequiredMixin, TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         user_habits = Habit.objects.filter(user=self.request.user)
-        today = timezone.now().date()
+        # Use localtime for today's date
+        today = timezone.localtime(timezone.now()).date()
         
         # Calculate total completions
         total_completions = sum(
@@ -61,6 +62,7 @@ class DashboardView(LoginRequiredMixin, TemplateView):
             'daily_habits': user_habits.filter(periodicity='daily'),
             'weekly_habits': user_habits.filter(periodicity='weekly'),
             'habits': user_habits,
+            'today': today.isoformat() 
         })
         return context
 
@@ -464,7 +466,7 @@ class AnalyticsView(LoginRequiredMixin, TemplateView):
         }
 
     def get_day_success_data(self, habits):
-        days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
+        days = ['Sunday','Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
         success_rates = []
         
         for day_number in range(7):
@@ -547,19 +549,16 @@ class HabitCompletionView(LoginRequiredMixin, View):
         """Check and create streak achievement notifications"""
         streak = habit.get_streak()
         if streak in [7, 30, 100]:
-            Notification.objects.create(
-                user=habit.user,
-                habit=habit,
-                type='streak',
-                message=f'Congratulations! {streak}-day streak on {habit.name}!'
-            )
+            message = f'Congratulations! {streak}-day streak on {habit.name}!'
+            subject = f"Achievement Unlocked: {streak}-Day Streak!"
             
-            # Send email notification
-            send_notification_email.delay(
-                habit.user.email,
-                f"Achievement Unlocked: {streak}-Day Streak!",
-                f"Congratulations! You've maintained a {streak}-day streak on {habit.name}!"
-            )
+            if habit.user.profile.notification_preferences.get('email_notifications'):
+                send_notification_email.delay(
+                    user_id=habit.user.id,
+                    subject=subject,
+                    message=message,
+                    notification_type='streak'
+                )
 
     def get_response_data(self, habit):
         """Get updated habit statistics"""

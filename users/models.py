@@ -5,6 +5,8 @@ from django.contrib.auth import get_user_model
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.core.exceptions import ValidationError
+from cloudinary.models import CloudinaryField
+from habits.streak_utils import StreakCalculator
 import pytz
 
 User = get_user_model()
@@ -17,11 +19,7 @@ class UserProfile(models.Model):
     ]
     
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
-    avatar = models.ImageField(
-        upload_to='avatars/',
-        null=True, 
-        blank=True,
-        default='avatars/default.png'
+    avatar = CloudinaryField('avatar', blank=True, null=True
     )
     bio = models.TextField(max_length=500, blank=True)
     timezone = models.CharField(
@@ -117,3 +115,4 @@ class Notification(models.Model):
     if not self.notification_preferences.get('daily_reminders', False):
         # If daily reminders are disabled, clear the reminder time
         self.daily_reminder_time = None
+

@@ -14,6 +14,8 @@ from .forms import ExportDataForm
 from datetime import datetime, timedelta, time
 from django.utils import timezone
 from habits.models import Habit, HabitCompletion
+from cloudinary.uploader import upload
+from cloudinary.utils import cloudinary_url
 import io
 import pytz
 

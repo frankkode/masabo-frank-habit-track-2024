@@ -5,248 +5,231 @@
 {% block title %}Dashboard - Activity Tracker{% endblock %}
 
 {% block content %}
-
-<div class="bg-white dark:bg-gray-800 dark:text-white p-6 bg-gray-100 min-h-screen">
-    
+<div class="bg-gradient-to-br from-violet-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 min-h-screen p-6">
     <!-- Statistics Cards -->
-    <div class="bg-white dark:bg-gray-800 dark:text-white grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         <!-- Total Stats -->
-        <div class="bg-white dark:bg-gray-800 dark:text-white bg-white shadow-md rounded-lg p-6">
-            <h2 class="bg-white dark:bg-gray-800 dark:text-white text-xl font-semibold mb-4 flex items-center">
-                <i data-lucide="bar-chart-2" class="bg-white dark:bg-gray-800 dark:text-white mr-2 text-blue-600"></i>
+        <div class="bg-white/90 dark:bg-gray-800 shadow-lg rounded-xl p-6">
+            <h2 class="text-xl font-semibold mb-4 flex items-center text-violet-700 dark:text-violet-400">
+                <i data-lucide="bar-chart-2" class="mr-2"></i>
                 Activity Overview
             </h2>
-            <div class="bg-white dark:bg-gray-800 dark:text-white space-y-4">
-                <div class="bg-white dark:bg-gray-800 dark:text-white flex justify-between">
+            <div class="space-y-4">
+                <div class="flex justify-between">
                     <span>Total Habits</span>
-                    <span class="bg-white dark:bg-gray-800 dark:text-white font-semibold">{{ total_habits }}</span>
+                    <span class="font-semibold text-violet-600 dark:text-violet-400">{{ total_habits }}</span>
                 </div>
-                <div class="bg-white dark:bg-gray-800 dark:text-white flex justify-between">
+                <div class="flex justify-between">
                     <span>Total Completions</span>
-                    <span class="bg-white dark:bg-gray-800 dark:text-white font-semibold">{{ total_completions }}</span>
+                    <span class="font-semibold text-violet-600 dark:text-violet-400">{{ total_completions }}</span>
                 </div>
-                <div class="bg-white dark:bg-gray-800 dark:text-white flex justify-between">
-                   
+                <div class="flex justify-between">
                     <span>Longest Streak</span>
-                    <span class="bg-white dark:bg-gray-800 dark:text-white font-semibold"> {{ longest_streak }} days </span>
+                    <span class="font-semibold text-violet-600 dark:text-violet-400">{{ longest_streak }} weeks</span>
                 </div>
             </div>
         </div>
 
-<!-- Daily Habits -->
-<div class="bg-white dark:bg-gray-800 dark:text-white bg-white shadow-md rounded-lg p-6">
-    <h2 class="bg-white dark:bg-gray-800 dark:text-white text-xl font-semibold mb-4 flex items-center">
-        <i data-lucide="sun" class="bg-white dark:bg-gray-800 dark:text-white w-5 h-5 mr-2 text-amber-500"></i>
-        Daily Habits
-    </h2>
-    <div class="bg-white dark:bg-gray-800 dark:text-white space-y-2">
-        {% for habit in daily_habits %}
-        <div class="bg-white dark:bg-gray-800 dark:text-white flex items-center justify-between p-2 {% if habit.get_completion_status %}bg-green-50{% else %}bg-orange-50{% endif %} rounded hover:bg-gray-100 transition-colors">
-            <div class="bg-white dark:bg-gray-800 dark:text-white flex items-center space-x-3 flex-1">
-                <span>{{ habit.name }}</span>
-                <!-- Add link to habit details -->
-                <a href="{% url 'habits:habit_detail' habit.id %}" 
-                   class="bg-white dark:bg-gray-800 dark:text-white text-indigo-600 hover:text-indigo-800 text-sm">
-                    <i data-lucide="info" class="bg-white dark:bg-gray-800 dark:text-white h-4 w-4"></i>
-                    <span class="bg-white dark:bg-gray-800 dark:text-white sr-only">Details</span>
-                </a>
-            </div>
-            <div class="bg-white dark:bg-gray-800 dark:text-white flex items-center space-x-4">
-                <span class="bg-white dark:bg-gray-800 dark:text-white text-sm {% if habit.get_completion_status %}text-green-600{% else %}text-orange-500{% endif %}">
-                    Streak: {{ habit.completions.count }}
-                </span>
-                <label class="bg-white dark:bg-gray-800 dark:text-white inline-flex relative items-center cursor-pointer">
-                    <input type="checkbox" value="" class="bg-white dark:bg-gray-800 dark:text-white sr-only peer" {% if habit.get_completion_status %}checked disabled{% endif %} onchange="completeHabit({{ habit.id }})">
-                    <div class="bg-white dark:bg-gray-800 dark:text-white w-11 h-6 bg-red-500 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-red-300 dark:peer-focus:ring-red-800 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-green-500"></div>
-                </label>
-            </div>
-        </div>
-        {% empty %}
-        <p class="bg-white dark:bg-gray-800 dark:text-white text-gray-500">No daily habits yet</p>
-        {% endfor %}
-    </div>
-</div>
-
-<!-- Weekly Habits -->
-<div class="bg-white dark:bg-gray-800 dark:text-white bg-white shadow-md rounded-lg p-6">
-    <h2 class="bg-white dark:bg-gray-800 dark:text-white text-xl font-semibold mb-4 flex items-center">
-        <i data-lucide="calendar" class="bg-white dark:bg-gray-800 dark:text-white mr-2 text-purple-600"></i>
-        Weekly Habits | 4W Streak
-    </h2>
-    <div class="bg-white dark:bg-gray-800 dark:text-white space-y-2">
-        {% for habit in weekly_habits %}
-        <div class="bg-white dark:bg-gray-800 dark:text-white flex items-center justify-between p-2 {% if habit.get_completion_status %}bg-green-50{% else %}bg-orange-50{% endif %} rounded hover:bg-gray-100 transition-colors">
-            <div class="bg-white dark:bg-gray-800 dark:text-white flex items-center space-x-3 flex-1">
-                <span>{{ habit.name }}</span>
-                <!-- Add link to habit details -->
-                <a href="{% url 'habits:habit_detail' habit.id %}" 
-                   class="bg-white dark:bg-gray-800 dark:text-white text-indigo-600 hover:text-indigo-800 text-sm">
-                    <i data-lucide="info" class="bg-white dark:bg-gray-800 dark:text-white h-4 w-4"></i>
-                    <span class="bg-white dark:bg-gray-800 dark:text-white sr-only">Details</span>
-                </a>
-            </div>
-            <div class="bg-white dark:bg-gray-800 dark:text-white flex items-center space-x-4">
-                <span class="bg-white dark:bg-gray-800 dark:text-white text-sm {% if habit.get_completion_status %}text-green-600{% else %}text-orange-500{% endif %}">
-                    Streak: {{ habit.completions.count }}
-                </span>
-                <label class="bg-white dark:bg-gray-800 dark:text-white inline-flex relative items-center cursor-pointer">
-                    <input type="checkbox" value="" class="bg-white dark:bg-gray-800 dark:text-white sr-only peer" {% if habit.get_completion_status %}checked disabled{% endif %} onchange="completeHabit({{ habit.id }})">
-                    <div class="bg-white dark:bg-gray-800 dark:text-white w-11 h-6 bg-red-500 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-red-300 dark:peer-focus:ring-red-800 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-green-500"></div>
-                </label>
+        <!-- Daily Habits -->
+        <div class="bg-white/90 dark:bg-gray-800 shadow-lg rounded-xl p-6">
+            <h2 class="text-xl font-semibold mb-4 flex items-center text-amber-600 dark:text-amber-400">
+                <i data-lucide="sun" class="w-5 h-5 mr-2"></i>
+                Daily Habits
+            </h2>
+            <div class="space-y-2">
+                {% for habit in daily_habits %}
+                <div class="flex items-center justify-between p-2 {% if habit.get_completion_status %}bg-green-50/50 dark:bg-green-900/30{% else %}bg-amber-50/50 dark:bg-amber-900/30{% endif %} rounded-lg hover:bg-gray-100/50 dark:hover:bg-gray-700/50 transition-colors">
+                    <div class="flex items-center space-x-3 flex-1">
+                        <span>{{ habit.name }}</span>
+                        <a href="{% url 'habits:habit_detail' habit.id %}" class="text-violet-600 hover:text-violet-800 dark:text-violet-400 dark:hover:text-violet-300 text-sm">
+                            <i data-lucide="info" class="h-4 w-4"></i>
+                        </a>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        <span class="text-sm {% if habit.get_completion_status %}text-green-600 dark:text-green-400{% else %}text-amber-600 dark:text-amber-400{% endif %}">
+                            Streak: {{ habit.completions.count }}
+                        </span>
+                        <label class="inline-flex relative items-center cursor-pointer">
+                            <input type="checkbox" value="" class="sr-only peer" {% if habit.get_completion_status %}checked disabled{% endif %} onchange="completeHabit({{ habit.id }})">
+                            <div class="w-11 h-6 bg-gray-200 dark:bg-gray-700 peer-focus:ring-4 peer-focus:ring-violet-300 dark:peer-focus:ring-violet-800 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-violet-500"></div>
+                        </label>
+                    </div>
+                </div>
+                {% empty %}
+                <p class="text-gray-500 dark:text-gray-400">No daily habits yet</p>
+                {% endfor %}
             </div>
         </div>
-        {% empty %}
-        <p class="bg-white dark:bg-gray-800 dark:text-white text-gray-500">No weekly habits yet</p>
-        {% endfor %}
-    </div>
-</div>
-    <!-- Add Habit Button -->
-    <div class="bg-white dark:bg-gray-800 dark:text-white fixed bottom-6 right-6">
-        <a href="{% url 'habits:habit_create' %}"
-           class="bg-white dark:bg-gray-800 dark:text-white flex items-center justify-center w-12 h-12 rounded-full shadow-lg bg-gradient-to-r from-blue-500 to-green-400 hover:from-blue-600 hover:to-green-500 transform hover:scale-110 transition-all duration-200">
-            <i data-lucide="plus" class="bg-blue w-6 h-6 text-white"></i>
-        </a>
-    </div>
-</div>
-<!-- Notifications Toast -->
-<div class="fixed top-4 left-1/2 transform -translate-x-1/2 z-50"
-     x-data="{ 
-        show: false,
-        message: '',
-        type: 'success',
-        timer: null,
-        showNotification(type, message) {
-            this.show = true;
-            this.type = type;
-            this.message = message;
-            if (this.timer) clearTimeout(this.timer);
-            this.timer = setTimeout(() => this.show = false, 20000);
-        }
-     }"
-     @show-notification.window="showNotification($event.detail.type, $event.detail.message)"
-     x-show="show"
-     x-transition:enter="transition ease-out duration-300"
-     x-transition:enter-start="opacity-0 transform -translate-y-2"
-     x-transition:enter-end="opacity-100 transform translate-y-0"
-     x-transition:leave="transition ease-in duration-200"
-     x-transition:leave-start="opacity-100 transform translate-y-0"
-     x-transition:leave-end="opacity-0 transform -translate-y-2"
-     x-cloak>
-    
-    <div class="bg-gray-800 dark:bg-gray-700 shadow-lg rounded-lg p-4 max-w-md flex items-center space-x-4">
-        <template x-if="type === 'success'">
-            <svg class="w-6 h-6 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-            </svg>
-        </template>
-        
-        <template x-if="type === 'error'">
-            <svg class="w-6 h-6 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-            </svg>
-        </template>
 
-        <p class="text-green-400 dark:text-green-300 font-medium" x-text="message"></p>
-        
-        <button @click="show = false" class="text-gray-400 hover:text-gray-300">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-            </svg>
-        </button>
+        <!-- Weekly Habits -->
+        <div class="bg-white/90 dark:bg-gray-800 shadow-lg rounded-xl p-6">
+            <h2 class="text-xl font-semibold mb-4 flex items-center text-purple-600 dark:text-purple-400">
+                <i data-lucide="calendar" class="mr-2"></i>
+                Weekly Habits | 4W Streak
+            </h2>
+            <div class="space-y-2">
+                {% for habit in weekly_habits %}
+                <div class="flex items-center justify-between p-2 {% if habit.get_completion_status %}bg-green-50/50 dark:bg-green-900/30{% else %}bg-amber-50/50 dark:bg-amber-900/30{% endif %} rounded-lg hover:bg-gray-100/50 dark:hover:bg-gray-700/50 transition-colors">
+                    <div class="flex items-center space-x-3 flex-1">
+                        <span>{{ habit.name }}</span>
+                        <a href="{% url 'habits:habit_detail' habit.id %}" class="text-violet-600 hover:text-violet-800 dark:text-violet-400 dark:hover:text-violet-300 text-sm">
+                            <i data-lucide="info" class="h-4 w-4"></i>
+                        </a>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        <span class="text-sm {% if habit.get_completion_status %}text-green-600 dark:text-green-400{% else %}text-amber-600 dark:text-amber-400{% endif %}">
+                            Streak: {{ habit.completions.count }}
+                        </span>
+                        <label class="inline-flex relative items-center cursor-pointer">
+                            <input type="checkbox" value="" class="sr-only peer" {% if habit.get_completion_status %}checked disabled{% endif %} onchange="completeHabit({{ habit.id }})">
+                            <div class="w-11 h-6 bg-gray-200 dark:bg-gray-700 peer-focus:ring-4 peer-focus:ring-violet-300 dark:peer-focus:ring-violet-800 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-violet-500"></div>
+                        </label>
+                    </div>
+                </div>
+                {% empty %}
+                <p class="text-gray-500 dark:text-gray-400">No weekly habits yet</p>
+                {% endfor %}
+            </div>
+        </div>
     </div>
-</div>
-<div class="bg-white dark:bg-gray-800 dark:text-white p-6 bg-gray-100 min-h-screen">
 
     <!-- Habits with Progress Bars -->
-    
-    <div class="bg-white dark:bg-gray-800 dark:text-white grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <div class="mt-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {% for habit in habits %}
-        <a href="{% url 'habits:habit_detail' habit.id %}" >
-        <div class="bg-green-50 dark:bg-gray-800 dark:text-white habit-card shadow-lg" 
-             style="border-bottom: 5px solid {% cycle '#E45A84' '#FFD478' '#BA53DE' '#497285' '#3AB1C8' '#8DC6FF' %}">
-            <h3 class=" dark:bg-gray-800 dark:text-white text-xl font-semibold mb-2">{{ habit.name }}</h3>
-            
-            <div class="dark:bg-gray-800 dark:text-white progress-shell">
-                <div class="bg-white dark:bg-gray-800 dark:text-white progress-bar" 
-                     style="width: {{ habit.get_completion_percentage }}%">
+        <a href="{% url 'habits:habit_detail' habit.id %}">
+            <div class="bg-white/90 dark:bg-gray-800 rounded-xl p-6 shadow-lg hover:shadow-xl transition-all duration-300" 
+                 style="border-bottom: 5px solid {% cycle '#E45A84' '#FFD478' '#BA53DE' '#497285' '#3AB1C8' '#8DC6FF' %}">
+                <h3 class="text-xl font-semibold mb-4 text-gray-800 dark:text-gray-200">{{ habit.name }}</h3>
+                <div class="bg-gray-200 dark:bg-gray-700 rounded-full h-2 mb-4">
+                    <div class="bg-gradient-to-r from-violet-500 to-indigo-500 h-2 rounded-full transition-all duration-500"
+                         style="width: {{ habit.get_completion_percentage }}%"></div>
+                </div>
+                <div class="flex justify-between items-center">
+                    <span class="text-sm text-gray-600 dark:text-gray-400">
+                        {{ habit.completions.count }}/{{ habit.target_completions }} times
+                    </span>
+                    {% if habit.is_completed %}
+                    <div class="text-green-600 dark:text-green-400 font-semibold">Complete!</div>
+                    {% endif %}
                 </div>
             </div>
-            <div class=" dark:bg-gray-800 dark:text-white flex justify-between items-center mt-4">
-                <span class="dark:bg-gray-800 dark:text-white text-sm text-gray-600">
-                    {{ habit.completions.count }}/{{ habit.target_completions }} times
-                </span>
-                {% if habit.is_completed %}
-            <div class="bg-white dark:bg-gray-800 dark:text-white mt-2 text-center text-green-600 font-semibold">
-                Complete!
-            </div>
-            {% endif %}
-            </div>   
-        </div>
-        {% endfor %}</a>
+        </a>
+        {% endfor %}
     </div>
-</div>
 
-<button onclick="openManualEntry()" class="bg-white dark:bg-gray-800 dark:text-white text-indigo-600 hover:text-indigo-800">
-    Made a mistake? Streak manually
-</button>
+    <!-- Add Habit Button -->
+    <div class="fixed bottom-6 right-6">
+        <a href="{% url 'habits:habit_create' %}"
+           class="flex items-center justify-center w-12 h-12 rounded-full shadow-lg bg-gradient-to-r from-violet-500 to-indigo-500 hover:shadow-xl transform hover:scale-110 transition-all duration-300">
+            <i data-lucide="plus" class="w-6 h-6 text-white"></i>
+        </a>
+    </div>
 
-<!-- Modal -->
-<div id="manualEntryModal" class="bg-white dark:bg-gray-800 dark:text-white fixed inset-0 bg-gray-600 fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-50">
-    <div class="bg-white dark:bg-gray-800 dark:text-white flex items-center justify-center min-h-screen">
-        <div class="bg-white dark:bg-gray-800 dark:text-white bg-white p-6 rounded-lg shadow-xl max-w-md w-full">
-            <h2 class="bg-white dark:bg-gray-800 dark:text-white text-xl font-semibold mb-4">Manual Habit Entry</h2>
+    <div class="flex justify-center mt-6 mb-20">
+        <button onclick="openManualEntry()" class="px-6 py-3 bg-white/90 dark:bg-gray-800 text-violet-600 dark:text-violet-400 rounded-lg shadow-lg hover:shadow-xl transition-all font-medium">
+            Made a mistake? Streak manually
+        </button>
+    </div>
 
-               
+    <!-- Manual Entry Modal -->
+<div id="manualEntryModal" class="fixed inset-0 bg-black/50 overflow-y-auto h-full w-full hidden z-50">
+    <div class="flex items-center justify-center min-h-screen p-4">
+        <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-2xl w-full mx-auto relative">
+            <div class="flex justify-between items-center p-6 border-b border-gray-200 dark:border-gray-700">
+                <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-200">Manual Habit Entry</h2>
+                <button onclick="closeModal()" class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300">
+                    <i data-lucide="x" class="w-6 h-6"></i>
+                </button>
+            </div>
             
-                <!-- Habits with Progress Bars -->
-                <div class="bg-white dark:bg-gray-800 dark:text-white grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div class="p-6 max-h-[70vh] overflow-y-auto">
+                <div class="grid gap-6">
                     {% for habit in habits %}
-                    <div class="bg-white dark:bg-gray-800 dark:text-white habit-card bg-white shadow-lg" 
-                         style="border-bottom: 5px solid {% cycle '#E45A84' '#FFD478' '#BA53DE' '#497285' '#3AB1C8' '#8DC6FF' %}">
-                        <h3 class="bg-white dark:bg-gray-800 dark:text-white text-xl font-semibold mb-2">{{ habit.name }}</h3>
-                        
-                        <div class="bg-white dark:bg-gray-800 dark:text-white progress-shell">
-                            <div class="bg-white dark:bg-gray-800 dark:text-white progress-bar" 
-                                 style="width: {{ habit.get_completion_percentage }}%">
-                            </div>
-                            <span class="bg-white dark:bg-gray-800 dark:text-white progress-text">{{ habit.get_progress_text }}</span>
+                    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-md hover:shadow-lg transition-all p-5 border border-gray-100 dark:border-gray-700"
+                         style="border-left: 4px solid {% cycle '#E45A84' '#FFD478' '#BA53DE' '#497285' '#3AB1C8' '#8DC6FF' %}">
+                        <h3 class="text-lg font-semibold mb-3 text-gray-800 dark:text-gray-200">{{ habit.name }}</h3>
+                        <div class="bg-gray-200 dark:bg-gray-700 rounded-full h-2 mb-4">
+                            <div class="bg-gradient-to-r from-violet-500 to-indigo-500 h-2 rounded-full transition-all duration-500"
+                                 style="width: {{ habit.get_completion_percentage }}%"></div>
                         </div>
-                        
-                        <div class="bg-white dark:bg-gray-800 dark:text-white flex justify-between items-center mt-4">
-                            <span class="bg-white dark:bg-gray-800 dark:text-white text-sm text-gray-600">
+                        <div class="flex justify-between items-center">
+                            <span class="text-sm font-medium text-gray-600 dark:text-gray-400">
                                 {{ habit.completions.count }}/{{ habit.target_completions }} times
                             </span>
                             <button onclick="completeHabit({{ habit.id }})"
-                                    class="bg-white dark:bg-gray-800 dark:text-white p-2 rounded-full hover:bg-gray-100 transition-colors"
+                                    class="p-2 rounded-full hover:bg-violet-50 dark:hover:bg-gray-700 transition-colors"
                                     {% if habit.is_completed_today %}disabled{% endif %}>
                                 <i data-lucide="plus-circle" 
-                                   class="bg-white dark:bg-gray-800 dark:text-white w-6 h-6 {% if habit.is_completed_today %}text-green-500{% else %}text-gray-400{% endif %}">
-                                </i>
+                                   class="w-6 h-6 {% if habit.is_completed_today %}text-green-500{% else %}text-violet-500 dark:text-violet-400{% endif %}"></i>
                             </button>
                         </div>
-                        
-                        {% if habit.is_completed %}
-                        <div class="bg-white dark:bg-gray-800 dark:text-white mt-2 text-center text-green-600 font-semibold">
-                            Complete!
-                        </div>
-                        {% endif %}
                     </div>
                     {% endfor %}
                 </div>
-  
-                <div class="bg-white dark:bg-gray-800 dark:text-white mt-4 flex justify-end gap-2 sticky bottom-0 bg-white p-2">
-                    <button type="button" onclick="closeModal()" class="bg-white dark:bg-gray-800 dark:text-white px-4 py-2 text-gray-600 hover:bg-gray-100 rounded  z-10">
-                        Cancel
-                    </button>
-                    
-                </div>
-           
+            </div>
+
+            <div class="p-6 border-t border-gray-200 dark:border-gray-700 flex justify-end">
+                <button type="button" onclick="closeModal()" 
+                        class="px-5 py-2.5 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 font-medium transition-colors">
+                    Close
+                </button>
+            </div>
         </div>
     </div>
 </div>
+
+    <!-- Notification Toast -->
+    <div class="fixed top-4 left-1/2 transform -translate-x-1/2 z-50"
+         x-data="{ 
+            show: false,
+            message: '',
+            type: 'success',
+            timer: null,
+            showNotification(type, message) {
+                this.show = true;
+                this.type = type;
+                this.message = message;
+                if (this.timer) clearTimeout(this.timer);
+                this.timer = setTimeout(() => this.show = false, 3000);
+            }
+         }"
+         @show-notification.window="showNotification($event.detail.type, $event.detail.message)"
+         x-show="show"
+         x-transition:enter="transition ease-out duration-300"
+         x-transition:enter-start="opacity-0 transform -translate-y-2"
+         x-transition:enter-end="opacity-100 transform translate-y-0"
+         x-transition:leave="transition ease-in duration-200"
+         x-transition:leave-start="opacity-100 transform translate-y-0"
+         x-transition:leave-end="opacity-0 transform -translate-y-2"
+         x-cloak>
+        <div class="bg-white/90 dark:bg-gray-800 shadow-lg rounded-lg p-4 flex items-center space-x-4">
+            <template x-if="type === 'success'">
+                <svg class="w-6 h-6 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                </svg>
+            </template>
+            <template x-if="type === 'error'">
+                <svg class="w-6 h-6 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+            </template>
+            <p class="text-gray-800 dark:text-gray-200" x-text="message"></p>
+        </div>
+    </div>
+</div>
+
 <style>
-    .progress-bar{background-color:#30e7ff;}
+<style>
+.progress-bar {
+    @apply bg-gradient-to-r from-violet-500 to-indigo-500;
+    transition: width 0.5s ease-out;
+}
+
+.habit-card {
+    @apply bg-white/90 dark:bg-gray-800 rounded-xl shadow-lg p-4 transition-all duration-300 hover:shadow-xl;
+}
 </style>
+
 <script>
 function openManualEntry() {
     document.getElementById('manualEntryModal').classList.remove('hidden');
@@ -256,33 +239,6 @@ function closeModal() {
     document.getElementById('manualEntryModal').classList.add('hidden');
 }
 
-document.getElementById('manualEntryForm').addEventListener('submit', function(e) {
-    e.preventDefault();
-    
-    const habitId = document.getElementById('habitSelect').value;
-    const date = document.getElementById('completionDate').value;
-    
-    fetch(`/habit/${habitId}/manual-complete/`, {
-        method: 'POST',
-        headers: {
-            'X-CSRFToken': '{{ csrf_token }}',
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ date: date })
-    })
-    .then(response => response.json())
-    .then(data => {
-        if(data.status === 'success') {
-            closeModal();
-            window.location.reload();
-        }
-    });
-});
-</script>
-{% endblock %}
-
-{% block extra_js %}
-<script>
 function completeHabit(habitId) {
     fetch(`/habit/${habitId}/complete/`, {
         method: 'POST',
@@ -294,7 +250,6 @@ function completeHabit(habitId) {
     .then(response => response.json())
     .then(data => {
         if (data.status === 'success') {
-            // Dispatch custom event for notification
             window.dispatchEvent(new CustomEvent('show-notification', {
                 detail: {
                     type: 'success',

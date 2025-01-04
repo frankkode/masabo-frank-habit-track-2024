@@ -1,6 +1,16 @@
+from datetime import timedelta
 import os
 from pathlib import Path
+import cloudinary
+import cloudinary.uploader
+import cloudinary.api
+from datetime import timedelta
+from celery.schedules import crontab
+from urllib.parse import urlparse
 from dotenv import load_dotenv
+import dj_database_url
+from decouple import config
+import redis
 
 load_dotenv()
 
@@ -30,6 +40,9 @@ INSTALLED_APPS = [
     'tailwind',
     'channels',
     'corsheaders',
+    'cloudinary',
+    'cloudinary_storage',
+    'django_celery_beat',
     # Local apps
     'habits.apps.HabitsConfig',
     'users.apps.UsersConfig',
@@ -44,6 +57,8 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'allauth.account.middleware.AccountMiddleware',
+    'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
 
 ]
 
@@ -68,14 +83,33 @@ TEMPLATES = [
     },
 ]
 
-
-# Database
+if os.getenv('RAILWAY_ENVIRONMENT', False):  # Production on Railway
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': os.getenv('PGDATABASE'),
+            'USER': os.getenv('PGUSER'),
+            'PASSWORD': os.getenv('PGPASSWORD'),
+            'HOST': os.getenv('PGHOST'),
+            'PORT': os.getenv('PGPORT'),
+        }
+    }
+else:  # Local Development
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
+    }
+    
+""" # Database
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
     }
-}
+} """
+
 
 # Password validation
 AUTH_PASSWORD_VALIDATORS = [
@@ -93,20 +127,10 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-# Database
-""" DATABASES = {
-   'default': {
-       'ENGINE': os.getenv('DB_ENGINE', 'django.db.backends.sqlite3'),
-       'NAME': os.getenv('DB_NAME', BASE_DIR / 'db.sqlite3'),
-       'USER': os.getenv('DB_USER'),
-       'PASSWORD': os.getenv('DB_PASSWORD'), 
-       'HOST': os.getenv('DB_HOST'),
-       'PORT': os.getenv('DB_PORT')
-   }
-} """
+
 # Internationalization
 LANGUAGE_CODE = 'en-us'
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Europe/Helsinki'
 USE_I18N = True
 USE_L10N = True
 USE_TZ = True
@@ -117,10 +141,13 @@ STATICFILES_DIRS = [
     BASE_DIR / "habits" / "static",
 ]
 STATIC_ROOT = BASE_DIR / 'staticfiles'
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
 
 # Media files
-MEDIA_URL = '/media/'
-MEDIA_ROOT = BASE_DIR / 'media'
+MEDIA_URL = '/media/'  
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 
 # Default primary key field type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
@@ -135,6 +162,21 @@ AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',
     'allauth.account.auth_backends.AuthenticationBackend',
 ]
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'root': {
+        'handlers': ['console'],
+        'level': 'INFO',
+    },
+}
+
 LOGIN_REDIRECT_URL = 'habits:dashboard'
 LOGIN_URL = 'users:login'
 LOGOUT_REDIRECT_URL = 'users:login'
@@ -153,9 +195,6 @@ CHANNEL_LAYERS = {
         },
     },
 }
-
-
-
 # Redis and Celery settings
 
 
@@ -167,23 +206,40 @@ CORS_ALLOWED_ORIGINS = [
     "http://127.0.0.1:8000",
 ]
 # Email
-EMAIL_BACKEND = os.getenv('EMAIL_BACKEND')
-EMAIL_HOST = os.getenv('EMAIL_HOST')
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_HOST = "smtp.gmail.com"
 EMAIL_PORT = os.getenv('EMAIL_PORT')
 EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
 EMAIL_USE_TLS = os.getenv('EMAIL_USE_TLS') == 'True'
 
 # Redis/Celery
-REDIS_HOST = os.getenv('REDIS_HOST', 'redis')
-REDIS_PORT = os.getenv('REDIS_PORT', 6379)
+REDIS_HOST = os.getenv('REDIS_HOST')
+REDIS_PORT = os.getenv('REDIS_PORT')
 
-CELERY_BROKER_URL = os.getenv('CELERY_BROKER_URL', f'redis://{REDIS_HOST}:{REDIS_PORT}/0')
-CELERY_RESULT_BACKEND = os.getenv('CELERY_RESULT_BACKEND', f'redis://{REDIS_HOST}:{REDIS_PORT}/0')
+
+CELERY_BROKER_URL = os.getenv('CELERY_BROKER_URL')
+CELERY_RESULT_BACKEND = os.getenv('CELERY_RESULT_BACKEND')
 CELERY_BROKER_CONNECTION_RETRY = True
 CELERY_BROKER_CONNECTION_RETRY_ON_STARTUP = True
-CELERY_BROKER_CONNECTION_MAX_RETRIES = 10
-
+CELERY_BROKER_CONNECTION_MAX_RETRIES = 1500
+CELERY_TASK_TRACK_STARTED = True
+CELERY_TASK_TIME_LIMIT = 30 * 60
+CELERY_SEND_TASK_ERROR_EMAILS = True
+CELERY_BEAT_SCHEDULE = {
+    'send-notification-every-day': {
+        'task': 'habits.tasks.send_notification',
+        'schedule': crontab(minute=29, hour=0),  
+    },
+    'analyze-habits': {
+        'task': 'habits.tasks.analyze_habits',
+        'schedule': timedelta(days=1),
+    },
+    'send-habit-reminders': {
+        'task': 'habits.tasks.send_habit_reminder',
+        'schedule': crontab(minute=18, hour=23),  
+    }
+}
 # Additional Celery Settings
 CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
@@ -198,6 +254,28 @@ CHANNEL_LAYERS = {
        },
    },
 }
+# Parse Cloudinary URL from environment
+cloudinary_url = urlparse(os.getenv('CLOUDINARY_URL', ''))
+
+
+# Cloudinary settings
+CLOUDINARY_STORAGE = {
+    'CLOUD_NAME': os.getenv('CLOUDINARY_CLOUD_NAME'),
+    'API_KEY': os.getenv('CLOUDINARY_API_KEY'),
+    'API_SECRET': os.getenv('CLOUDINARY_API_SECRET'),
+    'SECURE': True
+}
+
+# Initialize cloudinary
+cloudinary.config(
+    cloud_name=CLOUDINARY_STORAGE['CLOUD_NAME'],
+    api_key=CLOUDINARY_STORAGE['API_KEY'],
+    api_secret=CLOUDINARY_STORAGE['API_SECRET'],
+    secure=True
+)
+
+# Media files config
+DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 
 CACHES = {
    'default': {
