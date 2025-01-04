@@ -274,6 +274,7 @@ cloudinary.config(
     secure=True
 )
 
+WSGI_APPLICATION = 'habit_tracker.wsgi.application'
 # Media files config
 DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 
