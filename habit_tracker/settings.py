@@ -18,6 +18,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = os.getenv('SECRET_KEY')
 DEBUG = os.getenv('DEBUG', 'False') == 'True'
+#always change to add your domain this is for test purposes
 ALLOWED_HOSTS = ['*']
 
 # Application definition
