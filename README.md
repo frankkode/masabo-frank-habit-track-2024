@@ -1,27 +1,82 @@
 # Habit Tracker
 A comprehensive Django-based habit tracking application that helps users build and maintain positive habits through daily and weekly tracking, analytics, and motivational features.
 
-## Features
-- 📊 Dashboard with habit overview and statistics
-- 📈 Detailed analytics and progress tracking
-- 🎯 Daily and weekly habit tracking
-- 🏆 Streak tracking and milestone achievements
-- 📱 Responsive design for mobile and desktop
-- 🌙 Dark mode support
-- 📧 Email notifications for reminders
-- 📊 Visual progress with charts
-- 🔒 User authentication and personal habits
+![Dashboard Preview](docs/images/dashboard.png)
 
-## Tech Stack
+## ✨ Key Features
+
+### 📊 Smart Dashboard
+- Real-time habit overview
+- Success rate statistics
+- Current streaks display
+- Quick-action completion buttons
+- Progress indicators
+
+### 📈 Advanced Analytics
+- Detailed completion trends
+- Success rate by weekday
+- Streak history tracking
+- Performance insights
+- Custom date range analysis
+
+### 🎯 Flexible Habit Management
+- Daily/Weekly habit tracking
+- Custom periodicity settings
+- Habit categorization
+- Priority levels
+- Notes and reflections
+
+### 🏆 Achievement System
+- Milestone tracking
+- Streak achievements
+- Progress badges
+- Achievement history
+- Motivational notifications
+
+### 📱 Modern UI/UX
+- Responsive design
+- Dark/Light mode
+- Touch-friendly interface
+- Intuitive navigation
+- Accessibility support
+
+### 🔔 Smart Notifications
+- Email reminders
+- Achievement alerts
+- Streak notifications
+- Custom scheduling
+- Notification preferences
+
+## 🛠️ Technology Stack
+
+### Backend
+- Python 3.11+
 - Django 4.2+
-- Python 3.11
-- PostgreSQL
-- Redis (for Celery)
-- Celery (background tasks)
-- Tailwind CSS
-- Chart.js
 - Django REST Framework
+- Celery 5.2+
+- Redis 6.0+
+- PostgreSQL 13+
 
+### Frontend
+- Tailwind CSS 3.0
+- Alpine.js 3.0
+- Chart.js 4.0
+- HTML5/CSS3
+
+### DevOps
+- Docker
+- Git
+- GitHub Actions
+
+## 📦 Installation
+
+### Prerequisites
+```bash
+# Install Homebrew (Mac)
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+
+# Install dependencies
+brew install python@3.11 postgresql redis node
 ## Project Structure
 ```
 habit-track-2024/
@@ -86,20 +141,15 @@ habit-track-2024/
 
 ## Installation
 
-### Prerequisites
-- Python 3.11+
-- Node.js and npm
-- Redis server
-- PostgreSQL
-
 ### Setup Steps
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/habit-tracker.git
-cd habit-tracker
+git clone https://github.com/frankkode/masabo-frank-habit-track-2024.git
+
+cd habitapp 
 
 # Create and activate virtual environment
-python -m venv env
+python3 -m venv env
 source env/bin/activate  # On Mac/Linux
 .\env\Scripts\activate  # On Windows
 
@@ -111,17 +161,15 @@ cp .env.example .env
 # Edit .env with your configuration
 
 # Run migrations
-python manage.py migrate
+python3 manage.py migrate
 
 # Create superuser
-python manage.py createsuperuser
-
-# Install frontend dependencies
-npm install
+python3 manage.py createsuperuser
 
 # Build CSS
-python manage.py tailwind install
-python manage.py tailwind build
+python3 manage.py tailwind install
+python3 manage.py tailwind build
+python3 manage.py collectstatic
 ```
 
 ### Running the Application
@@ -137,13 +185,21 @@ celery -A habit_tracker worker -l info
 celery -A habit_tracker beat -l info
 
 # Run development server
-python manage.py runserver
+python3 manage.py runserver
 
 # Run tests
-python manage.py pytest
+python3 manage.py pytest
 ```
-
-## API Endpoints
+## Configuration (in settings)
+SECRET_KEY=your-secret-key
+DEBUG=True
+DATABASE_URL=postgres://user:pass@localhost:5432/habit_tracker
+REDIS_URL=redis://localhost:6379/0
+EMAIL_HOST=smtp.gmail.com
+EMAIL_PORT=587
+EMAIL_HOST_USER=your@email.com
+EMAIL_HOST_PASSWORD=your-app-password
+## 🚀 API Endpoints
 
 * `GET /api/habits/` - List all habits
 * `POST /api/habits/` - Create new habit
@@ -160,10 +216,6 @@ python manage.py pytest
 - **Notification**: Handles user notifications and achievements
 
 ### Features Implementation
-- **Streak Tracking**: Automated calculation of daily/weekly streaks
-- **Analytics**: Detailed insights into habit performance
-- **Dark Mode**: System-wide theme support
-- **Email Notifications**: Automated reminders and achievement notifications
 - **Charts**: Visual representation of progress using Chart.js
 
 ## Development
@@ -171,10 +223,10 @@ python manage.py pytest
 ### Running Tests
 ```bash
 # Run all tests
-python manage.py pytest
+python3 manage.py pytest
 
 # Run specific test file
-python manage.py pytest habits/tests/test_views.py
+python3 manage.py pytest habits/tests/test_views.py
 ```
 
 ### Code Style
@@ -183,7 +235,7 @@ The project follows PEP 8 style guide for Python code. Use `flake8` for linting:
 flake8 .
 ```
 
-## Contributing
+## 🧪 Contributing
 
 1. Fork the repository
 2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
@@ -195,7 +247,7 @@ flake8 .
 
 This project is licensed under the MIT License - see the LICENSE file for details.
 
-## Acknowledgments
+## 🙏 Acknowledgments
 
 * Django Documentation
 * Tailwind CSS
@@ -203,3 +255,5 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 ---
 Built with 💪 for better habits and personal growth.
+
+Note:This project was created as my school assignment (IU).
