@@ -1,5 +1,5 @@
 
-# 🎯 Habit Tracker Pro - Transform Your Daily Routines
+# 🎯 Habit Tracker - Transform Your Daily Routines
 
 [![Django](https://img.shields.io/badge/Django-4.2+-green.svg)](https://www.djangoproject.com/)
 [![Python](https://img.shields.io/badge/Python-3.11+-blue.svg)](https://www.python.org/)
@@ -11,7 +11,7 @@
 
 ## 🌟 Introduction
 
-Welcome to Habit Tracker Pro - your comprehensive solution for building and maintaining positive habits. Built with Django and modern technologies, this application combines powerful tracking capabilities with intuitive design to help you transform your daily routines into lasting positive changes.
+Welcome to Habit Tracker - your comprehensive solution for building and maintaining positive habits. Built with Django and modern technologies, this application combines powerful tracking capabilities with intuitive design to help you transform your daily routines into lasting positive changes.
 
 Developed as part of my academic journey at IU International University, this project showcases both technical excellence and practical utility, helping users achieve their personal development goals through technology.
 
@@ -28,7 +28,7 @@ Developed as part of my academic journey at IU International University, this pr
   - Daily/weekly completion rates
 
 - **Interactive Statistics**
-  - Custom date range analysis
+  - Date range analysis
   - Success rate calculations
   - Trend visualization
   - Performance metrics
@@ -37,7 +37,7 @@ Developed as part of my academic journey at IU International University, this pr
 ### 📈 Advanced Analytics
 - **Data Visualization**
   - Interactive Chart.js graphs
-  - Success rate by weekday
+  - Success rate by weekday and monthly
   - Monthly trend analysis
   - Habit correlation insights
   - Custom date range reports
@@ -53,9 +53,8 @@ Developed as part of my academic journey at IU International University, this pr
 - **Flexible Tracking**
   - Daily/weekly habit monitoring
   - Custom periodicity settings
-  - Priority levels (P1/P2/P3)
   - Category organization
-  - Progress notes
+  - Progress bar and note
 
 - **Smart Features**
   - Auto-detection of streaks
@@ -209,7 +208,7 @@ pip install -r requirements.txt
 ```bash
 # PostgreSQL Setup
 createdb habit_tracker
-python manage.py migrate
+python3 manage.py migrate
 
 # Redis Configuration
 redis-server
@@ -264,7 +263,7 @@ GET /api/analytics/streaks/
 
 ```bash
 # Run Tests
-python manage.py test
+python manage.py pytest
 
 # Specific Tests
 pytest habits/tests/test_views.py
@@ -274,22 +273,6 @@ pytest habits/tests/test_models.py
 pytest --cov=habits --cov-report=html
 ```
 
-## 🔧 Project Structure
-```
-habit-tracker/
-├── habitapp/
-│   ├── habits/
-│   │   ├── migrations/
-│   │   ├── templates/
-│   │   ├── static/
-│   │   ├── tests/
-│   │   ├── models.py
-│   │   ├── views.py
-│   │   └── urls.py
-│   ├── static/
-│   ├── templates/
-│   └── manage.py
-```
 
 ## 👥 Contributing
 
@@ -312,7 +295,7 @@ habit-tracker/
 
 ## 🌟 Conclusion
 
-Habit Tracker Pro represents the intersection of technology and personal development. Built with modern tools and focused on user experience, it provides a robust platform for habit formation and tracking. Whether you're a developer looking to contribute or a user seeking to improve your life, this application offers the features and support needed for successful habit building.
+Habit Tracker represents the intersection of technology and personal development. Built with modern tools and focused on user experience, it provides a robust platform for habit formation and tracking. Whether you're a developer looking to contribute or a user seeking to improve your life, this application offers the features and support needed for successful habit building.
 
 ## 🙏 Acknowledgments
 
