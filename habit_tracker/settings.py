@@ -19,7 +19,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.getenv('SECRET_KEY')
 DEBUG = os.getenv('DEBUG', 'False') == 'True'
 # always change to add your domain this is for test purposes
-ALLOWED_HOSTS = ['*','https://habity.up.railway.app/']
+ALLOWED_HOSTS = ['*','https://habity.up.railway.app/','habity.up.railway.app/']
 
 # Application definition
 INSTALLED_APPS = [
@@ -69,7 +69,7 @@ ROOT_URLCONF = 'habit_tracker.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'templates')],  # Add this line
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],  
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
