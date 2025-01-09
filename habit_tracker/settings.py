@@ -19,7 +19,11 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.getenv('SECRET_KEY')
 DEBUG = os.getenv('DEBUG', 'False') == 'True'
 #always change to add your domain this is for test purposes
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = [
+    'habity.up.railway.app',
+    'localhost',
+    '127.0.0.1',
+]
 
 # Application definition
 INSTALLED_APPS = [
