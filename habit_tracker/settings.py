@@ -19,7 +19,20 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.getenv('SECRET_KEY')
 DEBUG = os.getenv('DEBUG', 'False') == 'True'
 # always change to add your domain this is for test purposes
-ALLOWED_HOSTS = ['*','https://habity.up.railway.app/','habity.up.railway.app/']
+# CORS Configuration
+CORS_ALLOW_ALL_ORIGINS = True  # For development only, be more restrictive in production
+CORS_ALLOWED_ORIGINS = [
+    "https://habity.up.railway.app",
+    "http://localhost:8000",
+    "http://127.0.0.1:8000",
+]
+
+# CSRF Configuration
+CSRF_TRUSTED_ORIGINS = [
+    "https://habity.up.railway.app",
+]
+
+CORS_ALLOW_CREDENTIALS = True
 
 # Application definition
 INSTALLED_APPS = [
@@ -30,6 +43,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.sites',
+    'corsheaders',
+    
     
     # Third party apps
     'allauth',
@@ -52,6 +67,7 @@ MESSAGE_STORAGE = 'django.contrib.messages.storage.session.SessionStorage'
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
