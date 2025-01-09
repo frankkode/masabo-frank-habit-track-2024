@@ -30,6 +30,8 @@ CORS_ALLOWED_ORIGINS = [
 # CSRF Configuration
 CSRF_TRUSTED_ORIGINS = [
     "https://habity.up.railway.app",
+    "http://localhost:8000",
+    "http://127.0.0.1:8000",
 ]
 
 CORS_ALLOW_CREDENTIALS = True
@@ -43,7 +45,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.sites',
-    'corsheaders',
+
     
     
     # Third party app
