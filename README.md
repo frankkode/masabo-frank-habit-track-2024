@@ -302,6 +302,8 @@ GET /api/analytics/streaks/
 
 ## 🧪 Testing
 
+<img src="/habits/static/docs/images/habit13.png" width="600" alt="Habit Tracker testing">
+
 ```bash
 # Run Tests
 python manage.py pytest
