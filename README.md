@@ -28,7 +28,10 @@ Welcome to Habit Tracker - your comprehensive solution for building and maintain
 
 Developed as part of my academic journey at IU International University, this project showcases both technical excellence and practical utility, helping users achieve their personal development goals through technology.
 
-<img src="/habits/static/docs/images/habit5.png" width="400" alt="Habit Tracker Light Dash Board">
+<p float="left">
+  <img src="/habits/static/docs/images/hb1.jpg" width="400" alt="Habit Tracker "/>
+  <img src="/habits/static/docs/images/hb2.jpg" width="400" alt="Habit Tracker"/>
+</p>
 
 ## ✨ Features
 
