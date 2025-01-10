@@ -9,6 +9,18 @@
 [![Celery](https://img.shields.io/badge/Celery-5.2+-brightgreen.svg)](https://docs.celeryq.dev/)
 [![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
+## 🌐 Live Demo
+
+Experience the Habit Tracker in action: [Habit Track App](https://habity.up.railway.app/)
+
+[![Live Demo](habits/static/docs/images/habit21.png)](https://habity.up.railway.app/)
+*Click the image to visit the live app*
+
+
+
+
+
+
 ## 🌟 Introduction
 
 Welcome to Habit Tracker - your comprehensive solution for building and maintaining positive habits. Built with Django and modern technologies, this application combines powerful tracking capabilities with intuitive design to help you transform your daily routines into lasting positive changes.
@@ -285,6 +297,8 @@ pytest habits/tests/test_models.py
 # Coverage
 pytest --cov=habits --cov-report=html
 ```
+
+### Habit Tracker Login
 ![Habit Tracker Login](/habits/static/docs/images/habit18.png)
 
 ## 👥 Contributing
@@ -310,10 +324,10 @@ To access administration dashboard just write your domain then /admin
 ex: https://habity.up.railway.app/admin
 
 ## Mobile responsiviness (small screens)
-![Habit Tracker Mobile](/habits/static/docs/images/1.png)
-![Habit Tracker Mobile](/habits/static/docs/images/2.png)
-![Habit Tracker Mobile](/habits/static/docs/images/3.png)
-![Habit Tracker Mobile](/habits/static/docs/images/4.png)
+![Habit Tracker Mobile](/habits/static/docs/images/1.jpg)
+![Habit Tracker Mobile](/habits/static/docs/images/2.jpg)
+![Habit Tracker Mobile](/habits/static/docs/images/3.jpg)
+![Habit Tracker Mobile](/habits/static/docs/images/4.jpg)
 
 ## 🌟 Conclusion
 
