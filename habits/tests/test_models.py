@@ -1,3 +1,4 @@
+from datetime import timedelta
 import pytest
 from django.utils import timezone
 from django.contrib.auth import get_user_model
@@ -24,15 +25,21 @@ class TestHabitModel:
         )
 
     def test_completion_percentage(self, daily_habit):
+        # Ensure target_completions is correct
+        daily_habit.target_completions = 1
+        daily_habit.save()
+
         # Initial percentage should be 0
         assert daily_habit.get_completion_percentage() == 0
-        
-        # Create completion
+
+        # Create a completion for today
         HabitCompletion.objects.create(
             habit=daily_habit,
-            completed_at=timezone.now()
+            completed_at=timezone.now()  # Ensure it's for today
         )
-        
+
         # Refresh from db and check percentage
         daily_habit.refresh_from_db()
         assert daily_habit.get_completion_percentage() == 100
+
+    

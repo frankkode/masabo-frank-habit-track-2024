@@ -15,7 +15,8 @@ Welcome to Habit Tracker - your comprehensive solution for building and maintain
 
 Developed as part of my academic journey at IU International University, this project showcases both technical excellence and practical utility, helping users achieve their personal development goals through technology.
 
-![Dashboard Preview](docs/images/dashboard.png)
+
+![Habit Tracker](/habits/static/docs/images/habit5.png)
 
 ## ✨ Features
 
@@ -33,7 +34,7 @@ Developed as part of my academic journey at IU International University, this pr
   - Trend visualization
   - Performance metrics
   - Achievement highlights
-
+![Habit Tracker Screenshot](/habits/static/docs/images/habit7.png)
 ### 📈 Advanced Analytics
 - **Data Visualization**
   - Interactive Chart.js graphs
@@ -48,7 +49,7 @@ Developed as part of my academic journey at IU International University, this pr
   - Time-based patterns
   - Category performance
   - Improvement suggestions
-
+![Habit Tracker](/habits/static/docs/images/habit8.png)
 ### 🎯 Habit Management
 - **Flexible Tracking**
   - Daily/weekly habit monitoring
@@ -62,7 +63,7 @@ Developed as part of my academic journey at IU International University, this pr
   - Progress predictions
   - Achievement tracking
   - Habit insights
-
+![Habit Tracker Screenshot](/habits/static/docs/images/habit9.png)
 ## 🛠️ Technical Architecture
 
 ## Project Structure
@@ -127,6 +128,7 @@ habit-track-2024/
 ├── .gitignore
 ```
 
+![Habit Tracker Screenshot](/habits/static/docs/images/habit10.png)
 
 ### Backend Framework
 ```python
@@ -145,6 +147,7 @@ habit-track-2024/
 - Real-time updates
 - Caching system
 ```
+![Habit Tracker Screenshot](/habits/static/docs/images/habit11.png)
 
 ### Database Design
 ```postgresql
@@ -162,7 +165,7 @@ habit-track-2024/
 - Query optimization
 - Data partitioning
 ```
-
+![Habit Tracker Screenshot](/habits/static/docs/images/habit2.png)
 ### Frontend Stack
 ```javascript
 # Core Technologies
@@ -176,7 +179,7 @@ habit-track-2024/
 - Dark/Light modes
 - Real-time updates
 ```
-
+![Habit Tracker Screenshot](/habits/static/docs/images/habit3.png)
 ## 📦 Installation
 
 ### Prerequisites
@@ -207,7 +210,8 @@ pip install -r requirements.txt
 ### Database Configuration
 ```bash
 # PostgreSQL Setup
-createdb habit_tracker
+python3 manage.py makemigrations
+
 python3 manage.py migrate
 
 # Redis Configuration
@@ -232,7 +236,13 @@ EMAIL_USE_TLS=True
 EMAIL_HOST_USER=your@email.com
 EMAIL_HOST_PASSWORD=your-app-password
 ```
+![Habit Tracker Screenshot](/habits/static/docs/images/habit4.png)
 
+```# Cloudinary Settings
+CLOUDINARY_CLOUD_NAME=your-cloud-name
+CLOUDINARY_API_KEY=your-api-key
+CLOUDINARY_API_SECRET=your-api-secret
+```
 ## 🚀 API Reference
 
 ### Authentication Endpoints
@@ -241,7 +251,7 @@ POST /api/auth/login/
 POST /api/auth/register/
 POST /api/auth/refresh/
 ```
-
+![Habit Tracker Screenshot](/habits/static/docs/images/habit12.png)
 ### Habit Management
 ```http
 GET    /api/habits/
@@ -251,6 +261,7 @@ PUT    /api/habits/{id}/
 DELETE /api/habits/{id}/
 POST   /api/habits/{id}/complete/
 ```
+![Habit Tracker change password](/habits/static/docs/images/habit14.png)
 
 ### Analytics Endpoints
 ```http
@@ -258,6 +269,8 @@ GET /api/analytics/overview/
 GET /api/analytics/trends/
 GET /api/analytics/streaks/
 ```
+
+![Habit Tracker testing](/habits/static/docs/images/habit13.png)
 
 ## 🧪 Testing
 
@@ -272,7 +285,7 @@ pytest habits/tests/test_models.py
 # Coverage
 pytest --cov=habits --cov-report=html
 ```
-
+![Habit Tracker Screenshot](/habits/static/docs/images/habit18.png)
 
 ## 👥 Contributing
 
@@ -293,6 +306,12 @@ pytest --cov=habits --cov-report=html
 - Clean code principles
 ```
 
+## Mobile responsiviness (small screens)
+![Habit Tracker Screenshot](/habits/static/docs/images/1.png)
+![Habit Tracker Screenshot](/habits/static/docs/images/2.png)
+![Habit Tracker Screenshot](/habits/static/docs/images/3.png)
+![Habit Tracker Screenshot](/habits/static/docs/images/4.png)
+
 ## 🌟 Conclusion
 
 Habit Tracker represents the intersection of technology and personal development. Built with modern tools and focused on user experience, it provides a robust platform for habit formation and tracking. Whether you're a developer looking to contribute or a user seeking to improve your life, this application offers the features and support needed for successful habit building.
@@ -304,6 +323,8 @@ Habit Tracker represents the intersection of technology and personal development
 - Chart.js Contributors
 - International University (IU)
 - Open Source Community
+
+
 
 ---
 

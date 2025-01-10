@@ -10,40 +10,26 @@ from .models import Habit, Notification, HabitCompletion
 from django.contrib.auth.models import User
 
 
-
-
-
 User = get_user_model()
 logger = logging.getLogger(__name__)
 
 @shared_task
-def send_notification_email(user_id, subject, message, notification_type='email'):
-    logger.info(f"Starting email task for user {user_id}")
+def send_notification_email(notification_id, user_email, subject):
     try:
-        user = User.objects.get(id=user_id)
-        logger.info(f"Found user: {user.email}")
+        notification = Notification.objects.get(id=notification_id)
         
-        notification = Notification.objects.create(
-            user=user,
-            type=notification_type,
-            message=message
-        )
-        logger.info(f"Created notification: {notification.id}")
-
         result = send_mail(
             subject=subject,
-            message=message,
+            message=notification.message,
             from_email=settings.DEFAULT_FROM_EMAIL,
-            recipient_list=[user.email],
+            recipient_list=[user_email],
             fail_silently=False
         )
-        logger.info(f"Email sent: {result}")
-
-        return result
+        
+        return bool(result)
     except Exception as e:
         logger.error(f"Error in send_notification_email: {str(e)}")
         return False
-
 @shared_task
 def analyze_habits():
     """Analyze habits and create notifications for struggling habits"""
@@ -56,11 +42,17 @@ def analyze_habits():
         for habit in habits:
             if habit.get_completion_percentage() < 50:
                 message = f"Your habit '{habit.name}' needs attention"
-                send_notification_email.delay(
-                    user_id=habit.user.id,
-                    subject="Habit Needs Attention",
+                notification = Notification.objects.create(
+                    user=habit.user,
+                    habit=habit,
                     message=message,
-                    notification_type='alert'
+                    type='alert'
+                )
+                
+                send_notification_email(
+                    notification_id=notification.id,
+                    user_email=habit.user.email,
+                    subject="Habit Needs Attention"
                 )
                 notification_count += 1
                 

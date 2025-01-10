@@ -72,3 +72,4 @@ class TestTasks:
         
         assert Notification.objects.count() > notifications_before
         assert result > 0
+    

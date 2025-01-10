@@ -81,13 +81,22 @@ class Habit(models.Model):
         return next_due if next_due > now else now
 
     def get_completion_percentage(self):
-        """Calculate completion percentage for today"""
+        """Calculate completion percentage for today or the current week"""
         today = timezone.now().date()
-        daily_completions = self.completions.filter(
-            completed_at__date=today
-        ).count()
-        return 100 if daily_completions > 0 else 0
-    # Streak Methods
+        
+        if self.periodicity == 'daily':
+            daily_completions = self.completions.filter(
+                completed_at__date=today
+            ).count()
+            return min((daily_completions / self.target_completions) * 100, 100)
+        else:  # weekly
+            week_start = today - timedelta(days=today.weekday())
+            week_completions = self.completions.filter(
+                completed_at__date__gte=week_start,
+                completed_at__date__lte=today
+            ).count()
+            return min((week_completions / self.target_completions) * 100, 100)
+        # Streak Methods
     def get_streak(self):
         """Calculate current streak taking periodicity into account"""
         completions = self.completions.order_by('-completed_at')
