@@ -327,10 +327,14 @@ To access administration dashboard just write your domain then /admin
 ex: https://habity.up.railway.app/admin
 
 ## Mobile responsiviness (small screens)
-![Habit Tracker Mobile](/habits/static/docs/images/1.jpg)
-![Habit Tracker Mobile](/habits/static/docs/images/2.jpg)
-![Habit Tracker Mobile](/habits/static/docs/images/3.jpg)
-![Habit Tracker Mobile](/habits/static/docs/images/4.jpg)
+<p float="left">
+  <img src="/habits/static/docs/images/1.jpg" width="400" alt="Habit Tracker Mobile 1"/>
+  <img src="/habits/static/docs/images/2.jpg" width="400" alt="Habit Tracker Mobile 2"/>
+</p>
+<p float="left">
+  <img src="/habits/static/docs/images/3.jpg" width="400" alt="Habit Tracker Mobile 3"/>
+  <img src="/habits/static/docs/images/4.jpg" width="400" alt="Habit Tracker Mobile 4"/>
+</p>
 
 ## 🌟 Conclusion
 
