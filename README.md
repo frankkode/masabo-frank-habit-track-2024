@@ -11,10 +11,13 @@
 
 ## 🌐 Live Demo
 
-Experience the Habit Tracker in action: [Habit Track App](https://habity.up.railway.app/)
+## 🌐 Live Demo
 
-[![Live Demo](habits/static/docs/images/habit21.png)](https://habity.up.railway.app/)
-*Click the image to visit the live app*
+Experience the Habit Tracker in action: [Habit Track App](https://habitapp.up.railway.app/)
+
+<img src="habits/static/docs/images/habit21.png" width="800" alt="Habit Tracker Screenshot">
+
+*Click [here](https://habitapp.up.railway.app/) to visit the live app*
 
 
 
