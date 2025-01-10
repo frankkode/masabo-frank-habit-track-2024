@@ -16,7 +16,7 @@ Welcome to Habit Tracker - your comprehensive solution for building and maintain
 Developed as part of my academic journey at IU International University, this project showcases both technical excellence and practical utility, helping users achieve their personal development goals through technology.
 
 
-![Habit Tracker](/habits/static/docs/images/habit5.png)
+![Habit Tracker Light Dash Board](/habits/static/docs/images/habit5.png)
 
 ## ✨ Features
 
@@ -34,7 +34,7 @@ Developed as part of my academic journey at IU International University, this pr
   - Trend visualization
   - Performance metrics
   - Achievement highlights
-![Habit Tracker Screenshot](/habits/static/docs/images/habit7.png)
+![Habit Tracker Dark Mode Dashboard](/habits/static/docs/images/habit7.png)
 ### 📈 Advanced Analytics
 - **Data Visualization**
   - Interactive Chart.js graphs
@@ -49,7 +49,7 @@ Developed as part of my academic journey at IU International University, this pr
   - Time-based patterns
   - Category performance
   - Improvement suggestions
-![Habit Tracker](/habits/static/docs/images/habit8.png)
+![Habit Tracker Dark Mode Analytics](/habits/static/docs/images/habit8.png)
 ### 🎯 Habit Management
 - **Flexible Tracking**
   - Daily/weekly habit monitoring
@@ -63,7 +63,7 @@ Developed as part of my academic journey at IU International University, this pr
   - Progress predictions
   - Achievement tracking
   - Habit insights
-![Habit Tracker Screenshot](/habits/static/docs/images/habit9.png)
+![Habit Tracker Profile (Bio)](/habits/static/docs/images/habit9.png)
 ## 🛠️ Technical Architecture
 
 ## Project Structure
@@ -128,7 +128,7 @@ habit-track-2024/
 ├── .gitignore
 ```
 
-![Habit Tracker Screenshot](/habits/static/docs/images/habit10.png)
+![Habit Tracker Profile](/habits/static/docs/images/habit10.png)
 
 ### Backend Framework
 ```python
@@ -147,7 +147,7 @@ habit-track-2024/
 - Real-time updates
 - Caching system
 ```
-![Habit Tracker Screenshot](/habits/static/docs/images/habit11.png)
+![Habit Tracker Profile](/habits/static/docs/images/habit11.png)
 
 ### Database Design
 ```postgresql
@@ -165,7 +165,7 @@ habit-track-2024/
 - Query optimization
 - Data partitioning
 ```
-![Habit Tracker Screenshot](/habits/static/docs/images/habit2.png)
+![Habit Tracker Analytics](/habits/static/docs/images/habit2.png)
 ### Frontend Stack
 ```javascript
 # Core Technologies
@@ -179,7 +179,7 @@ habit-track-2024/
 - Dark/Light modes
 - Real-time updates
 ```
-![Habit Tracker Screenshot](/habits/static/docs/images/habit3.png)
+![Habit Tracker Analytics](/habits/static/docs/images/habit3.png)
 ## 📦 Installation
 
 ### Prerequisites
@@ -236,7 +236,7 @@ EMAIL_USE_TLS=True
 EMAIL_HOST_USER=your@email.com
 EMAIL_HOST_PASSWORD=your-app-password
 ```
-![Habit Tracker Screenshot](/habits/static/docs/images/habit4.png)
+![Habit Tracker Create Habit](/habits/static/docs/images/habit4.png)
 
 ```# Cloudinary Settings
 CLOUDINARY_CLOUD_NAME=your-cloud-name
@@ -251,7 +251,7 @@ POST /api/auth/login/
 POST /api/auth/register/
 POST /api/auth/refresh/
 ```
-![Habit Tracker Screenshot](/habits/static/docs/images/habit12.png)
+![Habit Tracker Notification](/habits/static/docs/images/habit12.png)
 ### Habit Management
 ```http
 GET    /api/habits/
@@ -285,7 +285,7 @@ pytest habits/tests/test_models.py
 # Coverage
 pytest --cov=habits --cov-report=html
 ```
-![Habit Tracker Screenshot](/habits/static/docs/images/habit18.png)
+![Habit Tracker Login](/habits/static/docs/images/habit18.png)
 
 ## 👥 Contributing
 
@@ -305,12 +305,15 @@ pytest --cov=habits --cov-report=html
 - Unit test coverage
 - Clean code principles
 ```
+## Administration
+To access administration dashboard just write your domain then /admin
+ex: https://habity.up.railway.app/admin
 
 ## Mobile responsiviness (small screens)
-![Habit Tracker Screenshot](/habits/static/docs/images/1.png)
-![Habit Tracker Screenshot](/habits/static/docs/images/2.png)
-![Habit Tracker Screenshot](/habits/static/docs/images/3.png)
-![Habit Tracker Screenshot](/habits/static/docs/images/4.png)
+![Habit Tracker Mobile](/habits/static/docs/images/1.png)
+![Habit Tracker Mobile](/habits/static/docs/images/2.png)
+![Habit Tracker Mobile](/habits/static/docs/images/3.png)
+![Habit Tracker Mobile](/habits/static/docs/images/4.png)
 
 ## 🌟 Conclusion
 
