@@ -9,7 +9,8 @@
 [![Celery](https://img.shields.io/badge/Celery-5.2+-brightgreen.svg)](https://docs.celeryq.dev/)
 [![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-## 🌐 Live Demo
+## 🌐 Live Demo 
+## (username:admin  password:myschool) (username:admin2  password:myschool)
 
 Experience the Habit Tracker in action: [Habit Track App](https://habitapp.up.railway.app/)
 
@@ -355,6 +356,12 @@ ex: https://habity.up.railway.app/admin
 ## 🌟 Conclusion
 
 Habit Tracker represents the intersection of technology and personal development. Built with modern tools and focused on user experience, it provides a robust platform for habit formation and tracking. Whether you're a developer looking to contribute or a user seeking to improve your life, this application offers the features and support needed for successful habit building.
+
+
+## Project Database schema
+
+<img src="/habits/static/docs/images/schema.png" width="900" alt="Habit Tracker database schema"/>
+
 
 ## 🙏 Acknowledgments
 
