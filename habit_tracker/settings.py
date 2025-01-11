@@ -20,7 +20,7 @@ SECRET_KEY = os.getenv('SECRET_KEY')
 DEBUG = os.getenv('DEBUG', 'False') == 'True'
 # always change to add your domain this is for test purposes
 ALLOWED_HOSTS = ['*','https://habity.up.railway.app/','habity.up.railway.app/']
-CORS_ALLOW_ALL_ORIGINS = True  # For development only, be more restrictive in production
+CORS_ALLOW_ALL_ORIGINS = True  # For development only, be more restrictive in production.
 CORS_ALLOWED_ORIGINS = [
     "https://habity.up.railway.app",
     "http://localhost:8000",
@@ -59,7 +59,6 @@ INSTALLED_APPS = [
     'cloudinary',
     'cloudinary_storage',
     'django_celery_beat',
-    'django_extensions',
     # Local apps
     'habits.apps.HabitsConfig',
     'users.apps.UsersConfig',
