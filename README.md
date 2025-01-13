@@ -362,8 +362,8 @@ ex: https://habity.up.railway.app/admin
 ### Configure Django Admin Settings
 
 <p float="left">
-  <img src="/habits/static/docs/images/habit28.jpg" width="400" alt="Habit Tracker admin"/>
-  <img src="/habits/static/docs/images/habit27.jpg" width="400" alt="Habit Tracker admin"/>
+  <img src="/habits/static/docs/images/habit28.png" width="400" alt="Habit Tracker admin"/>
+  <img src="/habits/static/docs/images/habit27.png" width="400" alt="Habit Tracker admin"/>
 </p>
 
 1. **Periodic Tasks Configuration**
