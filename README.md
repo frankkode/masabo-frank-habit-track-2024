@@ -10,7 +10,7 @@
 [![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 ## 🌐 [Live Demo Habit Track App](https://habity.up.railway.app/) 
-## 1.(username:admin;  password:myschool) 2.(username:admin2;  password:myschool)
+## 1.<username:admin;  password:myschool> 2.<username:admin2;  password:myschool>
 
 Experience the Habit Tracker in action: [Habit Track App](https://habity.up.railway.app/)
 
