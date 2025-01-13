@@ -33,6 +33,7 @@ Developed as part of my academic journey at IU International University, this pr
   <img src="/habits/static/docs/images/hb1.jpg" width="400" alt="Habit Tracker "/>
   <img src="/habits/static/docs/images/hb2.jpg" width="400" alt="Habit Tracker"/>
 </p>
+
 ### Database schema
 
 <img src="/habits/static/docs/images/habit29.png" width="800" alt="Habit Tracker Dark Mode Dashboard">
@@ -404,7 +405,7 @@ Note: Make sure Celery worker is running to process scheduled tasks
 Habit Tracker represents the intersection of technology and personal development. Built with modern tools and focused on user experience, it provides a robust platform for habit formation and tracking. Whether you're a developer looking to contribute or a user seeking to improve your life, this application offers the features and support needed for successful habit building.
 
 
-## Project Database schema
+## Printed Project Database schema
 
 <img src="/habits/static/docs/images/schema.png" width="900" alt="Habit Tracker database schema"/>
 
