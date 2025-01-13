@@ -33,6 +33,9 @@ Developed as part of my academic journey at IU International University, this pr
   <img src="/habits/static/docs/images/hb1.jpg" width="400" alt="Habit Tracker "/>
   <img src="/habits/static/docs/images/hb2.jpg" width="400" alt="Habit Tracker"/>
 </p>
+### Database schema
+
+<img src="/habits/static/docs/images/habit29.png" width="800" alt="Habit Tracker Dark Mode Dashboard">
 
 ## ✨ Features
 
@@ -357,13 +360,20 @@ ex: https://habity.up.railway.app/admin
 
 ### Configure Django Admin Settings
 
+<p float="left">
+  <img src="/habits/static/docs/images/habit28.jpg" width="400" alt="Habit Tracker admin"/>
+  <img src="/habits/static/docs/images/habit27.jpg" width="400" alt="Habit Tracker admin"/>
+</p>
+
 1. **Periodic Tasks Configuration**
 
 ### Add New Periodic Task
+```
 Name: "Send Daily Notifications"
 Task: "habits.tasks.send_notification"
 Schedule: Crontab or Interval
 Crontab Settings
+```
 
 ### For daily notifications at 8 AM
 Minute: 0
