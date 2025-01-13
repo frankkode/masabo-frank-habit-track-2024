@@ -9,14 +9,14 @@
 [![Celery](https://img.shields.io/badge/Celery-5.2+-brightgreen.svg)](https://docs.celeryq.dev/)
 [![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-## 🌐 [Live Demo Habit Track App](https://habitapp.up.railway.app/) 
+## 🌐 [Live Demo Habit Track App](https://habity.up.railway.app/) 
 ## 1.(username:admin;  password:myschool) 2.(username:admin2;  password:myschool)
 
-Experience the Habit Tracker in action: [Habit Track App](https://habitapp.up.railway.app/)
+Experience the Habit Tracker in action: [Habit Track App](https://habity.up.railway.app/)
 
 <img src="habits/static/docs/images/habit21.png" width="600" alt="Habit Tracker Screenshot">
 
-*Click [here](https://habitapp.up.railway.app/) to visit the live app*
+*Click [here](https://habity.up.railway.app/) to visit the live app*
 
 
 
