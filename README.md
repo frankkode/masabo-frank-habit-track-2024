@@ -352,6 +352,42 @@ ex: https://habity.up.railway.app/admin
   <img src="/habits/static/docs/images/3.jpg" width="400" alt="Habit Tracker Mobile 3"/>
   <img src="/habits/static/docs/images/4.jpg" width="400" alt="Habit Tracker Mobile 4"/>
 </p>
+## Set up notification in Admin dashbord
+## Email and Notification Setup 
+
+### Configure Django Admin Settings
+
+1. **Periodic Tasks Configuration**
+
+### Add New Periodic Task
+Name: "Send Daily Notifications"
+Task: "habits.tasks.send_notification"
+Schedule: Crontab or Interval
+Crontab Settings
+
+### For daily notifications at 8 AM
+Minute: 0
+Hour: 8
+Day of week: *
+Day of month: *
+Month of year: *
+
+### Email Setup
+
+
+Add sending email in Email addresses section
+Configure site domain in Sites configuration
+
+### Quick Setup Guide:
+
+Go to Django Admin → Periodic Tasks
+Add new task with notification settings
+Configure Crontab for scheduling
+Set up email configuration
+Verify site domain settings
+
+
+Note: Make sure Celery worker is running to process scheduled tasks
 
 ## 🌟 Conclusion
 
