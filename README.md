@@ -14,7 +14,7 @@
 
 Experience the Habit Tracker in action: [Habit Track App](https://habity.up.railway.app/)
 
-<img src="habits/static/docs/images/habit21.png" width="600" alt="Habit Tracker Screenshot">
+<img src="habits/static/docs/images/habit21.png" width="800" alt="Habit Tracker Screenshot">
 
 *Click [here](https://habity.up.railway.app/) to visit the live app*
 
@@ -55,7 +55,7 @@ Developed as part of my academic journey at IU International University, this pr
   - Performance metrics
   - Achievement highlights
 
-<img src="/habits/static/docs/images/habit7.png" width="600" alt="Habit Tracker Dark Mode Dashboard">
+<img src="/habits/static/docs/images/habit7.png" width="800" alt="Habit Tracker Dark Mode Dashboard">
 ### 📈 Advanced Analytics
 - **Data Visualization**
   - Interactive Chart.js graphs
@@ -70,7 +70,7 @@ Developed as part of my academic journey at IU International University, this pr
   - Time-based patterns
   - Category performance
   - Improvement suggestions
-<img src="/habits/static/docs/images/habit8.png" width="600" alt="Habit Tracker Dark Mode Analytics">
+<img src="/habits/static/docs/images/habit8.png" width="800" alt="Habit Tracker Dark Mode Analytics">
 ### 🎯 Habit Management
 - **Flexible Tracking**
   - Daily/weekly habit monitoring
@@ -86,7 +86,7 @@ Developed as part of my academic journey at IU International University, this pr
   - Habit insights
 
 
-<img src="/habits/static/docs/images/habit9.png" width="600" alt="Habit Tracker Profile (Bio)">
+<img src="/habits/static/docs/images/habit9.png" width="800" alt="Habit Tracker Profile (Bio)">
 ## 🛠️ Technical Architecture
 
 ## Project Structure
@@ -151,7 +151,7 @@ habit-track-2024/
 ├── .gitignore
 ```
 
-<img src="/habits/static/docs/images/habit10.png" width="600" alt="Habit Tracker Profile">
+<img src="/habits/static/docs/images/habit10.png" width="800" alt="Habit Tracker Profile">
 
 ### Backend Framework
 ```python
@@ -170,7 +170,7 @@ habit-track-2024/
 - Real-time updates
 - Caching system
 ```
-<img src="/habits/static/docs/images/habit11.png" width="600" alt="Habit Tracker Profile">
+<img src="/habits/static/docs/images/habit11.png" width="800" alt="Habit Tracker Profile">
 
 ### Database Design
 ```postgresql
@@ -189,7 +189,7 @@ habit-track-2024/
 - Data partitioning
 ```
 
-<img src="/habits/static/docs/images/habit2.png" width="600" alt="Habit Tracker Analytics">
+<img src="/habits/static/docs/images/habit2.png" width="800" alt="Habit Tracker Analytics">
 
 ### Frontend Stack
 ```javascript
@@ -204,7 +204,7 @@ habit-track-2024/
 - Dark/Light modes
 - Real-time updates
 ```
-<img src="/habits/static/docs/images/habit3.png" width="600" alt="Habit Tracker Analytics">
+<img src="/habits/static/docs/images/habit3.png" width="800" alt="Habit Tracker Analytics">
 
 ## 📦 Installation
 
@@ -263,7 +263,7 @@ EMAIL_HOST_USER=your@email.com
 EMAIL_HOST_PASSWORD=your-app-password
 ```
 
-<img src="/habits/static/docs/images/habit4.png" width="600" alt="Habit Tracker Create Habit">
+<img src="/habits/static/docs/images/habit4.png" width="800" alt="Habit Tracker Create Habit">
 
 ```# Cloudinary Settings
 CLOUDINARY_CLOUD_NAME=your-cloud-name
@@ -278,7 +278,7 @@ POST /api/auth/login/
 POST /api/auth/register/
 POST /api/auth/refresh/
 ```
-<img src="/habits/static/docs/images/habit12.png" width="600" alt="Habit Tracker Notification">
+<img src="/habits/static/docs/images/habit12.png" width="800" alt="Habit Tracker Notification">
 
 ### Habit Management
 ```http
@@ -289,7 +289,7 @@ PUT    /api/habits/{id}/
 DELETE /api/habits/{id}/
 POST   /api/habits/{id}/complete/
 ```
-<img src="/habits/static/docs/images/habit14.png" width="600" alt="Habit Tracker change password">
+<img src="/habits/static/docs/images/habit14.png" width="800" alt="Habit Tracker change password">
 
 ### Analytics Endpoints
 ```http
@@ -300,14 +300,14 @@ GET /api/analytics/streaks/
 
 ## Export Data
 
-<img src="/habits/static/docs/images/habit16.png" width="600" alt="Habit Tracker export">
+<img src="/habits/static/docs/images/habit16.png" width="800" alt="Habit Tracker export">
 
 ## Delete a habit
-<img src="/habits/static/docs/images/habit6.png" width="600" alt="Habit Tracker testing">
+<img src="/habits/static/docs/images/habit6.png" width="800" alt="Habit Tracker testing">
 
 ## 🧪 Testing
 
-<img src="/habits/static/docs/images/habit13.png" width="600" alt="Habit Tracker testing">
+<img src="/habits/static/docs/images/habit13.png" width="800" alt="Habit Tracker testing">
 
 ```bash
 # Run Tests
@@ -323,7 +323,7 @@ pytest --cov=habits --cov-report=html
 
 ### Habit Tracker Login
 
-<img src="/habits/static/docs/images/habit18.png" width="600" alt="Habit Tracker Login">
+<img src="/habits/static/docs/images/habit18.png" width="800" alt="Habit Tracker Login">
 
 ## 👥 Contributing
 
