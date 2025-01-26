@@ -54,11 +54,25 @@ class Habit(models.Model):
         return f"{completions}/{target}"
 
     def get_completion_percentage(self):
-        today = timezone.now().date()
-        daily_completions = self.completions.filter(
-            completed_at__date=today,
-        ).count()
-        return 100 if daily_completions >= self.target_completions else 0
+        """Calculate completion percentage based on periodicity"""
+        today = timezone.localtime(timezone.now()).date()
+        
+        if self.periodicity == 'daily':
+            # Daily completion check with target
+            today_completions = self.completions.filter(
+                completed_at__date=today
+            ).count()
+            daily_target = self.target_completions or 1
+            return min((today_completions / daily_target) * 100, 100)
+        else:
+            # Weekly completion calculation
+            week_start = today - timedelta(days=today.weekday())
+            week_completions = self.completions.filter(
+                completed_at__date__gte=week_start,
+                completed_at__date__lte=today
+            ).count()
+            weekly_target = self.target_completions or 7
+            return min((week_completions / weekly_target) * 100, 100)
     def is_completed(self):
         """Check if habit has reached its target completions"""
         return self.completions.count() >= self.target_completions
